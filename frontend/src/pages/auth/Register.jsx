@@ -25,7 +25,7 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       await registerUser({ ...data, role });
-      toast.success('Welcome to DriveEase!');
+      toast.success('Welcome to  Rentify!');
       navigate(role === ROLES.OWNER ? ROUTES.OWNER_DASHBOARD : ROUTES.HOME);
     } catch (err) {
       toast.error(err || 'Registration failed');
@@ -39,7 +39,7 @@ const Register = () => {
   return (
     <div className="w-full max-w-md">
       <h1 className="font-display text-3xl font-semibold text-gray-900 dark:text-luxury-ivory">Create an account</h1>
-      <p className="mt-2 text-sm text-gray-500">Join DriveEase and start your journey.</p>
+      <p className="mt-2 text-sm text-gray-500">Join  Rentify and start your journey.</p>
 
       {/* Role Toggle */}
       <div className="mt-6 flex rounded-xl border border-gray-200 dark:border-gray-700 p-1">

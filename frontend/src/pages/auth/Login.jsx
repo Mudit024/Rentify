@@ -45,7 +45,7 @@ const Login = () => {
   return (
     <div className="w-full max-w-md">
       <h1 className="font-display text-3xl font-semibold text-gray-900 dark:text-luxury-ivory">Welcome back</h1>
-      <p className="mt-2 text-sm text-gray-500">Sign in to your DriveEase account.</p>
+      <p className="mt-2 text-sm text-gray-500">Sign in to your  Rentify account.</p>
 
       {location.search.includes('error=google_auth_failed') && (
         <div className="mt-4 rounded-xl bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-600 dark:text-red-300">

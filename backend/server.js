@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
+// import morgan from 'morgan';
 import session from 'express-session';
 
 import connectDB from './config/db.js';
@@ -33,7 +33,7 @@ app.use(
 );
 
 if (process.env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'));
+  // app.use(morgan('dev'));
 }
 
 // express-session is required for passport.initialize() in this version,
@@ -49,7 +49,7 @@ app.use(passport.initialize());
 
 // ---------- Routes ----------
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'DriveEase API is running', data: { timestamp: new Date() } });
+  res.status(200).json({ success: true, message: ' Rentify API is running', data: { timestamp: new Date() } });
 });
 
 app.use('/api/auth', authRoutes);
