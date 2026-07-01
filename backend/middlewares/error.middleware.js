@@ -5,7 +5,8 @@ const errorMiddleware = (err, req, res, next) => {
 
   // Normalize known non-ApiError errors into ApiError shape
   if (!(error instanceof ApiError)) {
-    const statusCode = error.statusCode || (error.name === 'ValidationError' ? 400 : 500);
+    const statusCode =
+      error.statusCode || (error.name === 'ValidationError' ? 400 : 500);
 
     let message = error.message || 'Internal Server Error';
 
@@ -15,21 +16,17 @@ const errorMiddleware = (err, req, res, next) => {
       message = `${field ? field.charAt(0).toUpperCase() + field.slice(1) : 'Field'} already exists`;
       error = new ApiError(409, message);
     }
-    // Mongoose CastError (bad ObjectId)
+    // Mongoose CastError
     else if (error.name === 'CastError') {
       error = new ApiError(400, `Invalid ${error.path}: ${error.value}`);
     }
-    // Mongoose validation error
+    // Mongoose ValidationError
     else if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message);
       error = new ApiError(400, messages.join(', '));
     } else {
       error = new ApiError(statusCode, message);
     }
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err);
   }
 
   return res.status(error.statusCode || 500).json({

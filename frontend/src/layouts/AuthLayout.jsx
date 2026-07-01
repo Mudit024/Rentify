@@ -10,7 +10,7 @@ const AuthLayout = () => (
         <div className="rounded-lg bg-primary-600 p-1.5">
           <Car className="h-5 w-5 text-white" />
         </div>
-        <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory">DriveEase</span>
+        <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory"> Rentify</span>
       </Link>
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <Outlet />

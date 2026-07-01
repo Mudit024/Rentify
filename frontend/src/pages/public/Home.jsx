@@ -17,7 +17,7 @@ const FAQS = [
 
 const TESTIMONIALS = [
   { name: 'Aisha Rahman', role: 'Frequent Renter', text: 'Booked a premium SUV for a weekend road trip in minutes. Seamless experience from start to finish.', rating: 5 },
-  { name: 'Carlos Mendez', role: 'Car Owner', text: 'Listed my car and got my first booking within 48 hours. DriveEase handles everything — love it.', rating: 5 },
+  { name: 'Carlos Mendez', role: 'Car Owner', text: 'Listed my car and got my first booking within 48 hours.  Rentify handles everything — love it.', rating: 5 },
   { name: 'Priya Singh', role: 'Business Traveler', text: 'Needed a clean sedan for client meetings. Picked up the keys from a nearby owner — total game changer.', rating: 5 },
 ];
 
@@ -104,7 +104,7 @@ const Home = () => {
       <section className="bg-white dark:bg-luxury-charcoal py-20 px-6">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 text-center">
-            <h2 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">How DriveEase works</h2>
+            <h2 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">How  Rentify works</h2>
             <p className="mt-3 text-gray-500 dark:text-gray-400">Three steps to your next drive</p>
           </div>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">

@@ -34,7 +34,7 @@ const Navbar = () => {
           <div className="rounded-lg bg-primary-600 p-1.5">
             <Car className="h-5 w-5 text-white" />
           </div>
-          <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory">DriveEase</span>
+          <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory"> Rentify</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

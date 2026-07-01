@@ -18,9 +18,9 @@ export const sendBookingConfirmationEmail = async ({ to, name, carTitle, pickupD
 
   try {
     await transporter.sendMail({
-      from: `"DriveEase" <${process.env.SMTP_USER}>`,
+      from: `" Rentify" <${process.env.SMTP_USER}>`,
       to,
-      subject: 'Your DriveEase Booking Confirmation',
+      subject: 'Your  Rentify Booking Confirmation',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
           <h2 style="color:#4f46e5;">Booking Confirmed, ${name}!</h2>
@@ -31,7 +31,7 @@ export const sendBookingConfirmationEmail = async ({ to, name, carTitle, pickupD
             <li><strong>Total Price:</strong> $${totalPrice}</li>
           </ul>
           <p>We'll notify you once the car owner approves your booking.</p>
-          <p style="color:#888;font-size:12px;">— The DriveEase Team</p>
+          <p style="color:#888;font-size:12px;">— The  Rentify Team</p>
         </div>
       `,
     });

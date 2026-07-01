@@ -13,7 +13,7 @@ const Footer = () => (
               <Car className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory">
-              DriveEase
+              Rentify
             </span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-gray-500 dark:text-gray-400">
@@ -81,7 +81,7 @@ const Footer = () => (
       </div>
 
       <div className="mt-10 border-t border-gray-100 dark:border-gray-800 pt-6 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} DriveEase. All rights reserved.
+        © {new Date().getFullYear()}  Rentify. All rights reserved.
       </div>
     </div>
   </footer>
