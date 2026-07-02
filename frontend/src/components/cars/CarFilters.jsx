@@ -23,7 +23,7 @@ const CarFilters = ({ filters, onChange, onReset }) => {
         onChange={update('q')}
       />
 
-      <Input placeholder="City or location" value={filters.location} onChange={update('location')} />
+      <Input placeholder="Exact location / City" value={filters.location} onChange={update('location')} />
 
       <Select
         label="Fuel Type"

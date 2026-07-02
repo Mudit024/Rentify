@@ -336,26 +336,28 @@ const Home = () => {
       </section>
 
       {/* CTA Banner */}
-      <section className="mx-6 sm:mx-12 lg:mx-20 rounded-3xl bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 px-6 py-16 text-center shadow-premium relative overflow-hidden">
-        {/* Glowing background highlights */}
-        <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-luxury-gold/10 blur-2xl" />
-        <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-white/5 blur-2xl" />
+      {(!isAuthenticated || role !== "customer") && (
+        <section className="mx-6 sm:mx-12 lg:mx-20 rounded-3xl bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 px-6 py-16 text-center shadow-premium relative overflow-hidden">
+          {/* Glowing background highlights */}
+          <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-luxury-gold/10 blur-2xl" />
+          <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-white/5 blur-2xl" />
 
-        <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-            Ready to list your car?
-          </h2>
-          <p className="text-base sm:text-lg text-primary-100 max-w-md mx-auto leading-relaxed">
-            Turn your asset into income. List your car on Rentify and start earning when it's idle.
-          </p>
-          <Link
-            to={ROUTES.REGISTER}
-            className="inline-block rounded-full bg-white hover:bg-luxury-gold px-8 py-3.5 font-bold text-primary-900 hover:text-luxury-charcoal hover:scale-105 active:scale-95 shadow-md hover:shadow-lg transition-all"
-          >
-            Get Started as an Owner
-          </Link>
-        </div>
-      </section>
+          <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Ready to list your car?
+            </h2>
+            <p className="text-base sm:text-lg text-primary-100 max-w-md mx-auto leading-relaxed">
+              Turn your asset into income. List your car on Rentify and start earning when it's idle.
+            </p>
+            <Link
+              to={ROUTES.REGISTER}
+              className="inline-block rounded-full bg-white hover:bg-luxury-gold px-8 py-3.5 font-bold text-primary-900 hover:text-luxury-charcoal hover:scale-105 active:scale-95 shadow-md hover:shadow-lg transition-all"
+            >
+              Get Started as an Owner
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

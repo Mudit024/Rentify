@@ -113,7 +113,7 @@ const CarListingForm = ({ defaultValues = {}, onSubmit, isSubmitting }) => {
           {...register("mileage", { required: "Mileage required" })}
         />
         <Input
-          label="Price Per Day ($)"
+          label="Price Per Day (₹)"
           type="number"
           min={1}
           error={errors.pricePerDay?.message}
@@ -123,8 +123,8 @@ const CarListingForm = ({ defaultValues = {}, onSubmit, isSubmitting }) => {
           })}
         />
         <Input
-          label="City / Location"
-          placeholder="e.g. New York"
+          label="Exact Location"
+          placeholder="e.g. Connaught Place, New Delhi or Indira Nagar, Bengaluru"
           error={errors.location?.message}
           {...register("location", { required: "Location required" })}
         />

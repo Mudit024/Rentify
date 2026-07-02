@@ -158,6 +158,7 @@ const OwnerBookings = () => {
                         Mark Paid
                       </Button>
                     )}
+                </div>
               </div>
             );
           })}

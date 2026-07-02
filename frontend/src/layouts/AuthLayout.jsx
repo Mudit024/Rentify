@@ -1,20 +1,32 @@
-import { Link, Outlet } from 'react-router-dom';
-import { Car } from 'lucide-react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Car, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { ROUTES } from '../constants/routes.js';
 
 const AuthLayout = () => {
+  const navigate = useNavigate();
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
 
       {/* Left */}
 
-      <div className="flex flex-col justify-center bg-white px-6 py-12 transition-colors duration-300 dark:bg-luxury-charcoal sm:px-12 lg:px-20">
+      <div className="flex flex-col justify-center bg-white px-6 py-6 sm:py-8 transition-colors duration-300 dark:bg-luxury-charcoal sm:px-12 lg:px-20">
+
+        <div className="mb-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-250 dark:border-gray-800 bg-white/50 dark:bg-luxury-deep/50 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary-500 text-gray-500 dark:text-gray-400 transition-all shadow-sm cursor-pointer active:scale-95"
+            title="Go Back"
+          >
+            <ArrowLeft className="h-4.5 w-4.5" />
+          </button>
+        </div>
 
         <Link
           to={ROUTES.HOME}
-          className="mb-10 flex items-center gap-2"
+          className="mb-5 flex items-center gap-2"
         >
           <div className="rounded-lg bg-primary-600 p-2">
             <Car className="h-5 w-5 text-white" />
