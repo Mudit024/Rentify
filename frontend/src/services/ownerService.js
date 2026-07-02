@@ -57,10 +57,17 @@ const ownerService = {
   },
 
   updateBookingStatus: async (bookingId, payload) => {
-    return await api.put(
-      `/owner/bookings/${bookingId}`,
-      payload
-    );
+    const { bookingStatus } = payload;
+    if (bookingStatus === 'approved' || bookingStatus === 'confirmed') {
+      return await api.patch(`/owner/bookings/${bookingId}/confirm`);
+    }
+    if (bookingStatus === 'rejected' || bookingStatus === 'cancelled') {
+      return await api.patch(`/owner/bookings/${bookingId}/cancel`);
+    }
+    if (bookingStatus === 'completed') {
+      return await api.patch(`/owner/bookings/${bookingId}/complete`);
+    }
+    return await api.patch(`/owner/bookings/${bookingId}/confirm`);
   },
 };
 
