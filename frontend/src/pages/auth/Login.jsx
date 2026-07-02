@@ -47,21 +47,23 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <h1 className="font-display text-3xl font-semibold text-gray-900 dark:text-luxury-ivory">
-      Welcome Back 👋
-      </h1>
-      <p className="mt-2 text-sm text-gray-500">
-        Sign in to continue your Rentify journey.
-      </p>
+    <div className="w-full max-w-md space-y-6">
+      <div>
+        <h1 className="font-display text-4xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
+          Welcome Back 👋
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          Sign in to continue your Rentify journey.
+        </p>
+      </div>
 
       {location.search.includes("error=google_auth_failed") && (
-        <div className="mt-4 rounded-xl bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-600 dark:text-red-300">
+        <div className="rounded-2xl bg-red-50 dark:bg-red-950/20 p-4 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30">
           Google sign-in failed. Please try again or use email and password.
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <Input
           label="Email"
           type="email"
@@ -82,21 +84,26 @@ const Login = () => {
           {...register("password", { required: "Password is required" })}
         />
 
-        <Button type="submit" loading={isLoading} className="w-full" size="lg">
+        <Button
+          type="submit"
+          loading={isLoading}
+          className="w-full bg-gradient-to-r from-primary-600 to-primary-700 py-3 font-bold text-white shadow-premium hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
+          size="lg"
+        >
           Sign In
         </Button>
       </form>
 
-      <div className="my-5 flex items-center gap-3">
-        <hr className="flex-1 border-gray-200 dark:border-gray-700" />
-        <span className="text-xs text-gray-400">or</span>
-        <hr className="flex-1 border-gray-200 dark:border-gray-700" />
+      <div className="flex items-center gap-3 py-2">
+        <hr className="flex-1 border-gray-200 dark:border-gray-800" />
+        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">or</span>
+        <hr className="flex-1 border-gray-200 dark:border-gray-800" />
       </div>
 
       <button
         type="button"
         onClick={handleGoogleLogin}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-700 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white/40 dark:bg-luxury-deep/40 hover:bg-gray-50 dark:hover:bg-gray-800/60 shadow-sm transition-all duration-300"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
@@ -119,11 +126,11 @@ const Login = () => {
         Continue with Google
       </button>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      <p className="text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
         No account yet?{" "}
         <Link
           to={ROUTES.REGISTER}
-          className="font-medium text-primary-600 hover:underline"
+          className="font-bold text-primary-500 hover:underline"
         >
           Create one
         </Link>

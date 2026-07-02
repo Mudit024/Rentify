@@ -56,24 +56,26 @@ const ManageUsers = () => {
   }
 
   return (
-    <div>
-      <h1 className="mb-2 font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
-        Manage Users
-      </h1>
+    <div className="space-y-8">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-6 mb-8">
+        <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
+          Manage Users
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          {users.length} registered account{users.length !== 1 ? "s" : ""} on the platform
+        </p>
+      </div>
 
-      <p className="mb-6 text-sm text-gray-500">
-        {users.length} user{users.length !== 1 ? "s" : ""}
-      </p>
-
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {["", ...Object.values(ROLES)].map((role) => (
           <button
             key={role}
+            type="button"
             onClick={() => setRoleFilter(role)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
               roleFilter === role
-                ? "bg-primary-600 text-white"
-                : "border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                ? "bg-primary-600 text-white shadow-premium"
+                : "border border-gray-200 dark:border-gray-800 text-gray-500 hover:text-primary-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 bg-white/50 dark:bg-luxury-deep/50 shadow-sm"
             }`}
           >
             {role
@@ -90,92 +92,94 @@ const ManageUsers = () => {
           description="Try a different filter."
         />
       ) : (
-        <div className="overflow-hidden rounded-xl2 border border-gray-100 dark:border-gray-800">
-          <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                {["User", "Email", "Role", "Provider", "Joined", "Actions"].map(
-                  (heading) => (
-                    <th
-                      key={heading}
-                      className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
-                    >
-                      {heading}
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-              {users.map((user) => (
-                <tr
-                  key={user._id}
-                  className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-semibold text-primary-700 dark:bg-primary-900/30">
-                        {user.avatar?.url ? (
-                          <img
-                            src={user.avatar.url}
-                            alt={user.name}
-                            className="h-full w-full rounded-full object-cover"
-                          />
-                        ) : (
-                          initials(user.name)
-                        )}
-                      </div>
-
-                      <span className="text-sm font-medium text-gray-900 dark:text-luxury-ivory">
-                        {user.name}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {user.email}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
-                        ROLE_COLORS[user.role]
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-3 text-xs capitalize text-gray-500">
-                    {user.authProvider}
-                  </td>
-
-                  <td className="px-4 py-3 text-xs text-gray-500">
-                    {formatDate(user.createdAt)}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    {user._id !== currentUser?._id && (
-                      <select
-                        value={user.role}
-                        onChange={(e) =>
-                          handleRoleChange(user._id, e.target.value)
-                        }
-                        className="rounded-lg border border-gray-200 bg-transparent px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-gray-700"
+        <div className="overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-md shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800/80">
+              <thead className="bg-gray-50/50 dark:bg-gray-900/50">
+                <tr>
+                  {["User", "Email", "Role", "Provider", "Joined", "Actions"].map(
+                    (heading) => (
+                      <th
+                        key={heading}
+                        className="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest text-gray-400"
                       >
-                        {Object.values(ROLES).map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </td>
+                        {heading}
+                      </th>
+                    )
+                  )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80">
+                {users.map((user) => (
+                  <tr
+                    key={user._id}
+                    className="transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/20"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/30 shadow-inner">
+                          {user.avatar?.url ? (
+                            <img
+                              src={user.avatar.url}
+                              alt={user.name}
+                              className="h-full w-full rounded-xl object-cover"
+                            />
+                          ) : (
+                            initials(user.name)
+                          )}
+                        </div>
+
+                        <span className="text-sm font-bold text-gray-900 dark:text-luxury-ivory">
+                          {user.name}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      {user.email}
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${
+                          ROLE_COLORS[user.role]
+                        }`}
+                      >
+                        {user.role}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-4 text-xs font-bold capitalize text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      {user.authProvider}
+                    </td>
+
+                    <td className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      {formatDate(user.createdAt)}
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user._id !== currentUser?._id && (
+                        <select
+                          value={user.role}
+                          onChange={(e) =>
+                            handleRoleChange(user._id, e.target.value)
+                          }
+                          className="rounded-xl border border-gray-200 bg-white dark:bg-luxury-deep px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-gray-700 shadow-sm"
+                        >
+                          {Object.values(ROLES).map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

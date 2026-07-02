@@ -71,16 +71,17 @@ const ManageCars = () => {
   });
 
   return (
-    <div>
-      <h1 className="mb-2 font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
-        Manage Cars
-      </h1>
+    <div className="space-y-8">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-6 mb-8">
+        <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
+          Manage Cars
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          {filteredCars.length} car listing{filteredCars.length !== 1 ? "s" : ""} on the platform
+        </p>
+      </div>
 
-      <p className="mb-6 text-sm text-gray-500">
-        {filteredCars.length} car{filteredCars.length !== 1 ? "s" : ""} showing
-      </p>
-
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {[
           { value: "all", label: "All Cars" },
           { value: "active", label: "Active" },
@@ -88,11 +89,12 @@ const ManageCars = () => {
         ].map((opt) => (
           <button
             key={opt.value}
+            type="button"
             onClick={() => setFilter(opt.value)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
               filter === opt.value
-                ? "bg-primary-600 text-white"
-                : "border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                ? "bg-primary-600 text-white shadow-premium"
+                : "border border-gray-200 dark:border-gray-800 text-gray-500 hover:text-primary-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 bg-white/50 dark:bg-luxury-deep/50 shadow-sm"
             }`}
           >
             {opt.label}
@@ -118,39 +120,44 @@ const ManageCars = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden"
+                className="rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-sm shadow-sm hover:shadow-premium hover:border-primary-500/20 transition-all duration-300 overflow-hidden"
               >
-                <div className="flex flex-col sm:flex-row">
+                <div className="flex flex-col md:flex-row">
                   <img
                     src={image}
                     alt={car.title}
-                    className="h-40 w-full sm:w-48 object-cover shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=300&q=80";
+                    }}
+                    className="h-44 w-full md:w-56 object-cover shrink-0 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-800"
                   />
-                  <div className="flex-1 p-5">
+                  <div className="flex-1 p-6 space-y-4">
                     <div className="flex items-start justify-between gap-4 flex-wrap">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-display text-lg font-semibold text-gray-900 dark:text-luxury-ivory">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-display text-lg font-bold text-gray-900 dark:text-luxury-ivory">
                             {car.title}
                           </h3>
                           {car.isBlocked && (
-                            <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                            <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700 dark:bg-red-950/30 dark:text-red-400 border border-red-200 dark:border-red-900/30">
                               Blocked
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-1">
                           {car.brand} {car.model} · {car.year} · {car.color}
                         </p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-luxury-ivory">
-                        {formatCurrency(car.pricePerDay)}/day
+                      <p className="font-extrabold text-gray-900 dark:text-luxury-ivory text-xl">
+                        {formatCurrency(car.pricePerDay)}
+                        <span className="text-xs font-normal text-gray-500"> /day</span>
                       </p>
                     </div>
 
-                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                    <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-t border-b border-gray-150/50 dark:border-gray-800/50 py-3">
                       <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
+                        <MapPin className="h-3.5 w-3.5 text-primary-500" />
                         {car.location}
                       </span>
                       <span>
@@ -158,20 +165,21 @@ const ManageCars = () => {
                       </span>
                       {car.owner && (
                         <span className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          {car.owner.name} ({car.owner.email})
+                          <User className="h-3.5 w-3.5 text-primary-500" />
+                          Owner: {car.owner.name} ({car.owner.email})
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-2">
                       {car.description}
                     </p>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="pt-2 flex flex-wrap gap-3">
                       <Button
                         size="sm"
                         variant={car.isBlocked ? "primary" : "outline"}
+                        className="rounded-xl px-4 py-2 font-bold shadow-sm"
                         onClick={() => handleBlockToggle(car)}
                       >
                         {car.isBlocked ? (
@@ -187,6 +195,7 @@ const ManageCars = () => {
                       <Button
                         size="sm"
                         variant="danger"
+                        className="rounded-xl px-4 py-2 font-bold shadow-sm"
                         onClick={() => handleDelete(car._id)}
                       >
                         <Trash2 className="h-3.5 w-3.5" /> Delete

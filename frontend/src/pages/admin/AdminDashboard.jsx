@@ -100,12 +100,12 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
+    <div className="space-y-8">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-6 mb-8">
+        <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
           Platform-wide overview
         </p>
       </div>
@@ -120,20 +120,27 @@ const AdminDashboard = () => {
         ))}
       </motion.div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         {quickLinks.map(({ to, icon: Icon, title, desc }) => (
           <Link
             key={to}
             to={to}
-            className="rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 transition-colors hover:border-primary-400"
+            className="rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-sm p-6 hover:shadow-premium hover:border-primary-500/30 hover:-translate-y-0.5 transition-all duration-300 group shadow-sm flex flex-col justify-between"
           >
-            <Icon className="mb-3 h-6 w-6 text-primary-600" />
-            <h3 className="font-semibold text-gray-900 dark:text-luxury-ivory">
-              {title}
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {desc}
-            </p>
+            <div>
+              <div className="rounded-xl bg-primary-50 dark:bg-primary-900/20 p-3 w-fit mb-4">
+                <Icon className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+              </div>
+              <h3 className="font-bold text-gray-900 dark:text-luxury-ivory text-lg">
+                {title}
+              </h3>
+              <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+                {desc}
+              </p>
+            </div>
+            <span className="mt-4 text-xs font-bold text-primary-500 group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform">
+              Open Panel →
+            </span>
           </Link>
         ))}
       </div>

@@ -8,11 +8,11 @@ const CarFilters = ({ filters, onChange, onReset }) => {
   const update = (key) => (e) => onChange({ [key]: e.target.value });
 
   return (
-    <div className="space-y-5 rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
-      <div className="flex items-center justify-between">
-        <h3 className="font-display text-base font-semibold text-gray-900 dark:text-luxury-ivory">Filters</h3>
-        <button   type="button" onClick={onReset} className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600">
-          <X className="h-3 w-3" /> Reset
+    <div className="space-y-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-md p-6 shadow-sm">
+      <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800/85">
+        <h3 className="font-display text-base font-bold text-gray-900 dark:text-luxury-ivory">Filters</h3>
+        <button type="button" onClick={onReset} className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-primary-600 transition-colors">
+          <X className="h-3.5 w-3.5" /> Reset
         </button>
       </div>
 

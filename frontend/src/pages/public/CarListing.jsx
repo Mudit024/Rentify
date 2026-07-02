@@ -139,23 +139,24 @@ const CarListing = () => {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mb-10 flex items-end justify-between border-b border-gray-100 dark:border-gray-800 pb-6">
         <div>
-          <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
+          <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
             Browse Cars
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
             {status === "succeeded"
-              ? `${pagination.total} car${pagination.total !== 1 ? "s" : ""} available`
-              : "Finding available cars…"}
+              ? `${pagination.total} premium car${pagination.total !== 1 ? "s" : ""} ready for you`
+              : "Locating premium fleet…"}
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setMobileFiltersOpen(true)}
-          className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm font-medium lg:hidden"
+          className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-luxury-deep px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 lg:hidden transition-all"
         >
-          <SlidersHorizontal className="h-4 w-4" /> Filters
+          <SlidersHorizontal className="h-4 w-4 text-primary-500" /> Filters
         </button>
       </div>
 

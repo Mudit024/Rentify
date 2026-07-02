@@ -88,14 +88,7 @@ const CarDetails = () => {
   if (!car) return null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-6 text-sm text-gray-500 hover:text-primary-600 flex items-center gap-1"
-      >
-        ← Back
-      </button>
-
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
         {/* Left col */}
         <motion.div
@@ -105,30 +98,30 @@ const CarDetails = () => {
         >
           <CarGallery images={car.images} title={car.title} />
 
-          <div>
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-sm p-6 sm:p-8 shadow-sm space-y-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
+                <h1 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
                   {car.title}
                 </h1>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
-                  <MapPin className="h-4 w-4" /> {car.location}
+                <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-gray-500">
+                  <MapPin className="h-4 w-4 text-primary-500" /> {car.location}
                 </p>
               </div>
               {!car.isAvailable && (
-                <span className="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-xs font-medium text-red-600 dark:text-red-300">
+                <span className="rounded-full bg-red-100 dark:bg-red-950/30 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30">
                   Currently Unavailable
                 </span>
               )}
             </div>
 
-            <p className="mt-5 leading-relaxed text-gray-600 dark:text-gray-300">
+            <p className="leading-relaxed text-gray-600 dark:text-gray-300 text-sm sm:text-base pt-2">
               {car.description}
             </p>
           </div>
 
-          <div>
-            <h2 className="mb-4 font-display text-xl font-semibold text-gray-900 dark:text-luxury-ivory">
+          <div className="rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-sm p-6 sm:p-8 shadow-sm">
+            <h2 className="mb-6 font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory border-b border-gray-100 dark:border-gray-800/80 pb-3">
               Specifications
             </h2>
             <CarSpecs car={car} />
@@ -136,20 +129,20 @@ const CarDetails = () => {
 
           {/* Owner info */}
           {car.owner && (
-            <div className="rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
-              <h2 className="mb-4 font-display text-xl font-semibold text-gray-900 dark:text-luxury-ivory">
+            <div className="rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-sm p-6 sm:p-8 shadow-sm">
+              <h2 className="mb-4 font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory">
                 Listed by
               </h2>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700">
-                  <User className="h-5 w-5" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 shadow-inner">
+                  <User className="h-5.5 w-5.5" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-luxury-ivory">
+                  <p className="font-bold text-gray-900 dark:text-luxury-ivory">
                     {car.owner.name}
                   </p>
                   {isAuthenticated && car.owner.phone && (
-                    <p className="text-sm text-gray-500">{car.owner.phone}</p>
+                    <p className="text-xs font-semibold text-gray-500 mt-0.5">{car.owner.phone}</p>
                   )}
                 </div>
               </div>

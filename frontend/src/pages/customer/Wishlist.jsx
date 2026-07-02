@@ -34,13 +34,15 @@ const Wishlist = () => {
   if (loading) return <Spinner fullPage />;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
-        My Wishlist
-      </h1>
-      <p className="mt-1 text-sm text-gray-500">
-        {cars.length} saved car{cars.length !== 1 ? "s" : ""}
-      </p>
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-6 mb-8">
+        <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
+          My Wishlist
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          {cars.length} saved premium car{cars.length !== 1 ? "s" : ""}
+        </p>
+      </div>
 
       {cars.length === 0 ? (
         <div className="mt-10">

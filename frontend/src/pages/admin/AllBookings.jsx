@@ -35,15 +35,15 @@ const AllBookings = () => {
   }
 
   return (
-    <div>
-      <h1 className="mb-2 font-display text-3xl font-bold text-gray-900 dark:text-luxury-ivory">
-        All Bookings
-      </h1>
-
-      <p className="mb-8 text-sm text-gray-500">
-        {bookings.length} platform-wide booking
-        {bookings.length !== 1 ? "s" : ""}
-      </p>
+    <div className="space-y-8">
+      <div className="border-b border-gray-100 dark:border-gray-800 pb-6 mb-8">
+        <h1 className="font-display text-3.5xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory">
+          All Bookings
+        </h1>
+        <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          {bookings.length} platform-wide booking{bookings.length !== 1 ? "s" : ""} recorded
+        </p>
+      </div>
 
       {bookings.length === 0 ? (
         <EmptyState
@@ -52,76 +52,80 @@ const AllBookings = () => {
           description="Platform bookings will appear here."
         />
       ) : (
-        <div className="overflow-x-auto rounded-xl2 border border-gray-100 dark:border-gray-800">
-          <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                {[
-                  "Car",
-                  "Customer",
-                  "Owner",
-                  "Dates",
-                  "Total",
-                  "Booking",
-                  "Payment",
-                ].map((heading) => (
-                  <th
-                    key={heading}
-                    className="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
-                  >
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
-              {bookings.map((booking) => (
-                <tr
-                  key={booking._id}
-                  className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                >
-                  <td className="px-4 py-3 font-medium text-gray-900 dark:text-luxury-ivory">
-                    {booking.car?.title || "—"}
-                  </td>
-
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    <p>{booking.user?.name || "—"}</p>
-                    <p className="text-xs">{booking.user?.email}</p>
-                  </td>
-
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    <p>{booking.owner?.name || "—"}</p>
-                    <p className="text-xs">{booking.owner?.email}</p>
-                  </td>
-
-                  <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-500">
-                    {formatDate(booking.pickupDate)}
-                    <br />
-                    {formatDate(booking.returnDate)}
-                  </td>
-
-                  <td className="px-4 py-3 font-semibold text-gray-900 dark:text-luxury-ivory">
-                    {formatCurrency(booking.totalPrice)}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <StatusBadge
-                      status={booking.bookingStatus}
-                      colorMap={BOOKING_STATUS_COLORS}
-                    />
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <StatusBadge
-                      status={booking.paymentStatus}
-                      colorMap={paymentColors}
-                    />
-                  </td>
+        <div className="overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-md shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800/80">
+              <thead className="bg-gray-50/50 dark:bg-gray-900/50">
+                <tr>
+                  {[
+                    "Car",
+                    "Customer",
+                    "Owner",
+                    "Dates",
+                    "Total",
+                    "Booking",
+                    "Payment",
+                  ].map((heading) => (
+                    <th
+                      key={heading}
+                      className="whitespace-nowrap px-6 py-4 text-left text-xs font-bold uppercase tracking-widest text-gray-400"
+                    >
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80">
+                {bookings.map((booking) => (
+                  <tr
+                    key={booking._id}
+                    className="transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/20"
+                  >
+                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-luxury-ivory whitespace-nowrap">
+                      {booking.car?.title || "—"}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      <p className="text-gray-900 dark:text-luxury-ivory">{booking.user?.name || "—"}</p>
+                      <p className="text-xs font-medium text-gray-400 mt-0.5">{booking.user?.email}</p>
+                    </td>
+
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                      <p className="text-gray-900 dark:text-luxury-ivory">{booking.owner?.name || "—"}</p>
+                      <p className="text-xs font-medium text-gray-400 mt-0.5">{booking.owner?.email}</p>
+                    </td>
+
+                    <td className="whitespace-nowrap px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400">
+                      {formatDate(booking.pickupDate)}
+                      <br />
+                      {formatDate(booking.returnDate)}
+                    </td>
+
+                    <td className="px-6 py-4 font-extrabold text-gray-900 dark:text-luxury-ivory whitespace-nowrap">
+                      {formatCurrency(booking.totalPrice)}
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge
+                        status={booking.bookingStatus}
+                        colorMap={BOOKING_STATUS_COLORS}
+                      />
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {booking.paymentStatus && (
+                        <StatusBadge
+                          status={booking.paymentStatus}
+                          colorMap={paymentColors}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

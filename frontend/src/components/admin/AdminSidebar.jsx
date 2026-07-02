@@ -4,29 +4,29 @@ import { ROUTES } from '../../constants/routes.js';
 
 const links = [
   { to: ROUTES.ADMIN_DASHBOARD, label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: ROUTES.ADMIN_LISTINGS, label: 'Listing Approvals', icon: ShieldCheck, end: true },
+  { to: ROUTES.ADMIN_CARS, label: 'Manage Cars', icon: ShieldCheck, end: true },
   { to: ROUTES.ADMIN_USERS, label: 'Users', icon: Users, end: true },
   { to: ROUTES.ADMIN_BOOKINGS, label: 'All Bookings', icon: CalendarCheck, end: true },
 ];
 
 const AdminSidebar = () => (
- <aside className="hidden w-64 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-luxury-charcoal px-4 py-8 lg:block">
-    <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Admin Panel</p>
-    <nav className="space-y-1">
+  <aside className="hidden w-66 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-luxury-deep/50 backdrop-blur-md px-4 py-8 lg:block">
+    <p className="mb-6 px-3 text-xs font-bold uppercase tracking-widest text-primary-500">Admin Panel</p>
+    <nav className="space-y-2">
       {links.map(({ to, label, icon: Icon, end }) => (
         <NavLink
           key={to}
           to={to}
           end={end}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+            `flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
               isActive
-                ? 'bg-luxury-gold/10 text-luxury-gold'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'bg-primary-600 text-white shadow-premium'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-300'
             }`
           }
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4.5 w-4.5" />
           {label}
         </NavLink>
       ))}
