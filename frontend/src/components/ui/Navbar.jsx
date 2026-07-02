@@ -72,12 +72,14 @@ const Navbar = () => {
           )}
 
           <Link to={isAuthenticated && (role === ROLES.OWNER || role === ROLES.ADMIN) ? dashboardRoute : ROUTES.HOME} className="flex items-center gap-2.5 group">
-            <div className="rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 p-2 shadow-premium group-hover:scale-105 transition-transform duration-300">
-              <Car className="h-5.5 w-5.5 text-white" />
+            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 via-indigo-500 to-luxury-gold p-[2px] shadow-premium group-hover:rotate-6 group-hover:scale-105 transition-all duration-500">
+              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-white dark:bg-luxury-deep">
+                <Car className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+              </div>
             </div>
 
-            <span className="font-display text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Rent<span className="text-primary-500">ify</span>
+            <span className="font-display text-2.5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-primary-500 to-luxury-gold dark:from-white dark:via-primary-400 dark:to-luxury-gold">
+              Rentify
             </span>
           </Link>
         </div>
