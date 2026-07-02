@@ -129,18 +129,32 @@ const OwnerBookings = () => {
                       </Button>
                     </>
                   )}
-                  {booking.bookingStatus === "approved" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-xl px-5 py-2.5 font-bold shadow-sm"
-                      onClick={() => updateStatus(booking._id, "completed")}
-                    >
-                      Mark Completed
-                    </Button>
+                  {(booking.bookingStatus === "approved" || booking.bookingStatus === "confirmed") && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl px-5 py-2.5 font-bold shadow-sm"
+                        onClick={() => updateStatus(booking._id, "completed")}
+                      >
+                        Mark Completed
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        className="rounded-xl px-5 py-2.5 font-bold shadow-sm"
+                        onClick={() => {
+                          if (window.confirm("Cancel this booking? This will release the car for other customers.")) {
+                            updateStatus(booking._id, "cancelled");
+                          }
+                        }}
+                      >
+                        Cancel Booking
+                      </Button>
+                    </>
                   )}
                   {booking.paymentStatus === "unpaid" &&
-                    ["approved", "completed"].includes(
+                    ["approved", "confirmed", "completed"].includes(
                       booking.bookingStatus,
                     ) && (
                       <Button

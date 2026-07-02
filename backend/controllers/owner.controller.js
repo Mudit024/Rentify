@@ -1,5 +1,6 @@
 import Car from '../models/car.model.js';
 import Booking from '../models/booking.model.js';
+import { sendBookingAcceptanceEmail, sendBookingCancellationByOwnerEmail } from '../services/email.service.js';
 
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
@@ -444,6 +445,26 @@ export const confirmBooking = asyncHandler(async (req, res) => {
 
   await booking.save();
 
+  // Populate references for email and frontend consumption
+  await booking.populate([
+    { path: 'user', select: 'name email phone avatar' },
+    { path: 'car', select: 'title brand model images pricePerDay year color transmission fuelType location description' },
+    { path: 'owner', select: 'name email phone' }
+  ]);
+
+  // Send Acceptance Email (Fire & Forget)
+  sendBookingAcceptanceEmail({
+    to: booking.user.email,
+    name: booking.user.name,
+    car: booking.car,
+    owner: booking.owner,
+    pickupDate: booking.pickupDate,
+    returnDate: booking.returnDate,
+    totalPrice: booking.totalPrice,
+  }).catch((err) => {
+    console.error("Booking Acceptance Email Failed:", err.message);
+  });
+
   return res.status(200).json(
     new ApiResponse(
       200,
@@ -473,16 +494,37 @@ export const cancelBooking = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Booking not found.');
   }
 
-  if (booking.bookingStatus !== 'pending') {
+  if (booking.bookingStatus !== 'pending' && booking.bookingStatus !== 'confirmed') {
     throw new ApiError(
       400,
-      'Only pending bookings can be cancelled.'
+      'Only pending or confirmed bookings can be cancelled.'
     );
   }
+
+  const wasConfirmed = booking.bookingStatus === 'confirmed';
 
   booking.bookingStatus = 'cancelled';
 
   await booking.save();
+
+  // Populate references so frontend state remains intact
+  await booking.populate([
+    { path: 'user', select: 'name email phone avatar' },
+    { path: 'car', select: 'title brand model images pricePerDay' }
+  ]);
+
+  // Send Cancellation Email to customer if booking was already confirmed (accepted)
+  if (wasConfirmed) {
+    sendBookingCancellationByOwnerEmail({
+      to: booking.user.email,
+      name: booking.user.name,
+      carTitle: booking.car.title,
+      pickupDate: booking.pickupDate,
+      returnDate: booking.returnDate,
+    }).catch((err) => {
+      console.error("Booking Cancellation Email Failed:", err.message);
+    });
+  }
 
   return res.status(200).json(
     new ApiResponse(

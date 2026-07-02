@@ -35,6 +35,9 @@ export const BOOKING_STATUS_COLORS = {
   approved:
     'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
 
+  confirmed:
+    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+
   rejected:
     'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
 

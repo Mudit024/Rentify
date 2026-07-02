@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -15,8 +15,6 @@ import carRoutes from './routes/car.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import ownerRoutes from './routes/owner.routes.js';
 import adminRoutes from './routes/admin.routes.js';
-
-dotenv.config();
 
 const app = express();
 

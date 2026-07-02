@@ -70,7 +70,7 @@ const MyBookings = () => {
               key={booking._id}
               booking={booking}
               actions={
-                ["pending", "approved"].includes(booking.bookingStatus) ? (
+                ["pending", "approved", "confirmed"].includes(booking.bookingStatus) ? (
                   <Button
                     variant="danger"
                     size="sm"

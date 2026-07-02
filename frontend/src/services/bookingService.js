@@ -10,7 +10,7 @@ const bookingService = {
   },
 
   cancelBooking: async (bookingId) => {
-    return await api.delete(`/bookings/${bookingId}`);
+    return await api.patch(`/bookings/${bookingId}/cancel`);
   },
 };
 
