@@ -132,7 +132,7 @@ const Home = () => {
         <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-luxury-gold/5 blur-3xl" />
 
         <div className="absolute inset-0 bg-gradient-to-b from-luxury-charcoal/40 via-luxury-charcoal/60 to-luxury-charcoal" />
-        
+
         <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -145,7 +145,9 @@ const Home = () => {
             </p>
             <h1 className="font-display text-4xl font-extrabold leading-tight text-luxury-ivory sm:text-6xl lg:text-7xl">
               Drive the car you <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-luxury-gold">actually want</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-luxury-gold">
+                actually want
+              </span>
             </h1>
             <p className="text-base sm:text-xl text-luxury-ivory/70 leading-relaxed max-w-xl">
               Rent from local owners or list your own car. Book premium vehicles
@@ -178,8 +180,7 @@ const Home = () => {
                 "Verified owners",
               ].map((t) => (
                 <span key={t} className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-luxury-gold" />{" "}
-                  {t}
+                  <span className="h-2 w-2 rounded-full bg-luxury-gold" /> {t}
                 </span>
               ))}
             </div>
@@ -198,7 +199,7 @@ const Home = () => {
               Three simple steps to unlock your next driving experience.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {[
               {
@@ -236,6 +237,96 @@ const Home = () => {
                 </p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Important Booking Notice & Rules */}
+      <section className="px-6 py-10 bg-gray-50/50 dark:bg-luxury-deep/20 border-t border-b border-gray-100/50 dark:border-gray-800/30">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 text-center space-y-2">
+            <p className="inline-block rounded-full bg-amber-500/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              Crucial Checklist
+            </p>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-gray-900 dark:text-luxury-ivory">
+              Important Booking Notice & Rules
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mt-2">
+              Please review these essential guidelines before requesting a car
+              rental.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: "Driving License",
+                highlight: "Mandatory physical DL",
+                desc: "A valid, physical original Driving License (DL) is compulsory. Digital licenses or soft copies are not verified for key delivery.",
+                color:
+                  "border-red-500/30 bg-red-50/30 dark:bg-red-950/10 text-red-700 dark:text-red-400",
+                icon: "🪪",
+              },
+              {
+                title: "Speed Limits",
+                highlight: "Max 80 km/h Limit",
+                desc: "Adhere to state speed restrictions. A maximum limit of 80 km/h is recommended for the safety of you and the vehicle.",
+                color:
+                  "border-amber-500/30 bg-amber-50/30 dark:bg-amber-950/10 text-amber-700 dark:text-amber-400",
+                icon: "⚡",
+              },
+             {
+  title: "Fuel Policy",
+  highlight: "Initial Fuel Provided",
+  desc: "Each vehicle comes with approximately 2 liters of fuel, enough to reach the nearest fuel station. Customers are responsible for refueling during their rental.",
+  color: "border-emerald-500/30 bg-emerald-50/30 dark:bg-emerald-950/10 text-emerald-700 dark:text-emerald-400",
+  icon: "⛽",
+},
+              {
+                title: "Cleanliness",
+                highlight: "No Smoking & Pets",
+                desc: "Smoking and pets are strictly prohibited inside all vehicles. Keep the car clean to avoid supplementary cleaning fees.",
+                color:
+                  "border-blue-500/30 bg-blue-50/30 dark:bg-blue-950/10 text-blue-700 dark:text-blue-400",
+                icon: "🧼",
+              },
+            ].map((rule, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                className={`rounded-2xl border ${rule.color} p-6 shadow-sm hover:shadow-premium transition-all duration-300 flex flex-col justify-between hover:scale-[1.02]`}
+              >
+                <div>
+                  <div className="text-3xl mb-4">{rule.icon}</div>
+                  <h3 className="font-display font-bold text-lg mb-1 text-gray-900 dark:text-luxury-ivory">
+                    {rule.title}
+                  </h3>
+                  <span className="inline-block text-xs font-bold tracking-wide uppercase mb-3">
+                    {rule.highlight}
+                  </span>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {rule.desc}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-12 rounded-2xl bg-amber-500/5 border border-amber-500/20 p-6 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <span className="text-2xl">ℹ️</span>
+            <div className="space-y-0.5">
+              <h4 className="font-bold text-gray-900 dark:text-luxury-ivory text-sm">
+                Owner Cancellation Privilege
+              </h4>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                To guarantee vehicle safety, car owners retain the right to
+                cancel bookings during the pre-booking window in case of
+                technical issues or emergencies.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -347,7 +438,8 @@ const Home = () => {
               Ready to list your car?
             </h2>
             <p className="text-base sm:text-lg text-primary-100 max-w-md mx-auto leading-relaxed">
-              Turn your asset into income. List your car on Rentify and start earning when it's idle.
+              Turn your asset into income. List your car on Rentify and start
+              earning when it's idle.
             </p>
             <Link
               to={ROUTES.REGISTER}
