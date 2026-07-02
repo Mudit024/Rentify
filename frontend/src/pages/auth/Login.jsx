@@ -13,8 +13,20 @@ import { ROLES } from "../../constants/index.js";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register: registerUser, isLoading } = useAuth();
+  const { login, register: registerUser, verifyOtp, isLoading } = useAuth();
   const from = location.state?.from?.pathname || null;
+
+  // OTP Verification States
+  const [pendingEmail, setPendingEmail] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // Forgot Password States
+  const [forgotStep, setForgotStep] = useState(null); // null | 'request' | 'reset'
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [resetOtp, setResetOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isResetLoading, setIsResetLoading] = useState(false);
 
   // Determine active tab from route
   const isRegisterRoute = location.pathname === ROUTES.REGISTER;
@@ -54,9 +66,14 @@ const Login = () => {
 
   const onLoginSubmit = async (data) => {
     try {
-      const user = await login(data);
-      toast.success(`Welcome back, ${user.name}!`);
-      redirectAfterLogin(user.role);
+      const res = await login(data);
+      if (res?.status === "PENDING_VERIFICATION") {
+        setPendingEmail(res.email);
+        toast.success("Please verify your email address to log in.");
+      } else {
+        toast.success(`Welcome back, ${res.name}!`);
+        redirectAfterLogin(res.role);
+      }
     } catch (err) {
       toast.error(
         typeof err === "string"
@@ -68,9 +85,14 @@ const Login = () => {
 
   const onSignupSubmit = async (data) => {
     try {
-      await registerUser({ ...data, role });
-      toast.success("Welcome to Rentify!");
-      navigate(role === ROLES.OWNER ? ROUTES.OWNER_DASHBOARD : ROUTES.HOME);
+      const res = await registerUser({ ...data, role });
+      if (res?.status === "PENDING_VERIFICATION") {
+        setPendingEmail(res.email);
+        toast.success("Verification code sent to your email.");
+      } else {
+        toast.success("Welcome to Rentify!");
+        navigate(role === ROLES.OWNER ? ROUTES.OWNER_DASHBOARD : ROUTES.HOME);
+      }
     } catch (err) {
       toast.error(
         typeof err === "string" ? err : err?.message || "Registration failed.",
@@ -78,9 +100,234 @@ const Login = () => {
     }
   };
 
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter a valid 6-digit code.");
+      return;
+    }
+    setIsVerifying(true);
+    try {
+      const user = await verifyOtp({ email: pendingEmail, otp });
+      toast.success("Account verified successfully! Welcome to Rentify.");
+      setPendingEmail(null);
+      setOtp("");
+      redirectAfterLogin(user.role);
+    } catch (err) {
+      toast.error(
+        typeof err === "string"
+          ? err
+          : err?.message || "Verification failed. Please try again.",
+      );
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   const handleGoogleAuth = () => {
     window.location.href = authService.googleAuthUrl(role);
   };
+
+  const handleRequestReset = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    setIsResetLoading(true);
+    try {
+      await authService.forgotPassword({ email: forgotEmail });
+      toast.success("Verification code sent to your email.");
+      setForgotStep("reset");
+    } catch (err) {
+      toast.error(typeof err === "string" ? err : err?.message || "Failed to send code.");
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetOtp || resetOtp.length !== 6) {
+      toast.error("Please enter a valid 6-digit code.");
+      return;
+    }
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
+    setIsResetLoading(true);
+    try {
+      await authService.resetPassword({
+        email: forgotEmail,
+        otp: resetOtp,
+        newPassword,
+      });
+      toast.success("Password reset successfully! Please log in.");
+      setForgotStep(null);
+      setForgotEmail("");
+      setResetOtp("");
+      setNewPassword("");
+    } catch (err) {
+      toast.error(typeof err === "string" ? err : err?.message || "Failed to reset password.");
+    } finally {
+      setIsResetLoading(false);
+    }
+  };
+
+  if (forgotStep === "request") {
+    return (
+      <div className="w-full max-w-sm space-y-4">
+        <div>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory leading-none">
+            Reset Password 🔒
+          </h1>
+          <p className="mt-2 text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+            Enter your email below and we'll send you a 6-digit verification code.
+          </p>
+        </div>
+
+        <form onSubmit={handleRequestReset} className="space-y-4">
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="jane@example.com"
+            icon={Mail}
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+            required
+          />
+
+          <Button
+            type="submit"
+            loading={isResetLoading}
+            className="w-full bg-gradient-to-r from-primary-600 to-primary-700 py-2.5 font-bold text-white shadow-premium hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
+            size="lg"
+          >
+            Send Verification Code
+          </Button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForgotStep(null);
+              setForgotEmail("");
+            }}
+            className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  if (forgotStep === "reset") {
+    return (
+      <div className="w-full max-w-sm space-y-4">
+        <div>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory leading-none">
+            New Password 🔑
+          </h1>
+          <p className="mt-2 text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+            Enter the 6-digit code sent to <span className="font-bold text-gray-900 dark:text-luxury-ivory">{forgotEmail}</span> and choose a new password.
+          </p>
+        </div>
+
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <Input
+            label="Verification Code"
+            type="text"
+            maxLength={6}
+            placeholder="123456"
+            value={resetOtp}
+            onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))}
+            required
+            className="text-center text-lg tracking-widest font-bold"
+          />
+
+          <Input
+            label="New Password"
+            type="password"
+            placeholder="Min. 6 characters"
+            icon={Lock}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+
+          <Button
+            type="submit"
+            loading={isResetLoading}
+            className="w-full bg-gradient-to-r from-primary-600 to-primary-700 py-2.5 font-bold text-white shadow-premium hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
+            size="lg"
+          >
+            Reset Password
+          </Button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForgotStep("request");
+              setResetOtp("");
+              setNewPassword("");
+            }}
+            className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
+          >
+            Go Back
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  if (pendingEmail) {
+    return (
+      <div className="w-full max-w-sm space-y-4">
+        <div>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 dark:text-luxury-ivory leading-none">
+            Verify Email ✉️
+          </h1>
+          <p className="mt-2 text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+            We've sent a 6-digit verification code to <span className="font-bold text-gray-900 dark:text-luxury-ivory">{pendingEmail}</span>. Enter it below to complete registration.
+          </p>
+        </div>
+
+        <form onSubmit={handleVerifyOtp} className="space-y-4">
+          <Input
+            label="Verification Code"
+            type="text"
+            maxLength={6}
+            placeholder="123456"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+            required
+            className="text-center text-lg tracking-widest font-bold"
+          />
+
+          <Button
+            type="submit"
+            loading={isVerifying}
+            className="w-full bg-gradient-to-r from-primary-600 to-primary-700 py-2.5 font-bold text-white shadow-premium hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
+            size="lg"
+          >
+            Verify Account
+          </Button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setPendingEmail(null);
+              setOtp("");
+            }}
+            className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm space-y-3">
@@ -147,6 +394,16 @@ const Login = () => {
               error={loginErrors.password?.message}
               {...registerLogin("password", { required: "Password is required" })}
             />
+
+            <div className="flex justify-end -mt-1 bg-transparent">
+              <button
+                type="button"
+                onClick={() => setForgotStep("request")}
+                className="text-xs font-semibold text-primary-500 hover:underline cursor-pointer bg-transparent border-0 p-0"
+              >
+                Forgot Password?
+              </button>
+            </div>
 
             <Button
               type="submit"

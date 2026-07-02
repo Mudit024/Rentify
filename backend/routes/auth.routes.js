@@ -7,6 +7,9 @@ import {
   logout,
   getMe,
   googleCallback,
+  verifyOtp,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/auth.controller.js";
 
 import {
@@ -25,8 +28,17 @@ const router = express.Router();
 // Register
 router.post("/register", registerValidator, register);
 
+// Verify OTP
+router.post("/verify-otp", verifyOtp);
+
 // Login
 router.post("/login", loginValidator, login);
+
+// Forgot Password
+router.post("/forgot-password", forgotPassword);
+
+// Reset Password
+router.post("/reset-password", resetPassword);
 
 // Logout
 router.post("/logout", authMiddleware, logout);

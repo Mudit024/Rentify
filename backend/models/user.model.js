@@ -73,6 +73,31 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    verificationOtp: {
+      type: String,
+      default: null,
+    },
+
+    verificationOtpExpiry: {
+      type: Date,
+      default: null,
+    },
+
+    resetPasswordOtp: {
+      type: String,
+      default: null,
+    },
+
+    resetPasswordOtpExpiry: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -107,6 +132,7 @@ userSchema.methods.toSafeObject = function () {
     role: this.role,
     authProvider: this.authProvider,
     isActive: this.isActive,
+    isVerified: this.isVerified,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

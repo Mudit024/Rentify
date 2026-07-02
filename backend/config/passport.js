@@ -28,6 +28,7 @@ passport.use(
         user = await User.findOne({ email });
         if (user) {
           user.googleId = profile.id;
+          user.isVerified = true;
           if (!user.avatar?.url && profile.photos?.[0]?.value) {
             user.avatar = { url: profile.photos[0].value, fileId: '' };
           }
@@ -53,6 +54,7 @@ passport.use(
           googleId: profile.id,
           authProvider: 'google',
           role: requestedRole,
+          isVerified: true,
           avatar: profile.photos?.[0]?.value
             ? { url: profile.photos[0].value, fileId: '' }
             : { url: '', fileId: '' },

@@ -7,6 +7,7 @@ import {
   logoutUser,
   fetchCurrentUser,
   clearAuthError,
+  verifyOtpCode,
 } from '../redux/slices/authSlice.js';
 
 export const useAuth = () => {
@@ -27,6 +28,11 @@ export const useAuth = () => {
 
   const register = useCallback(
     (payload) => dispatch(registerUser(payload)).unwrap(),
+    [dispatch]
+  );
+
+  const verifyOtp = useCallback(
+    (payload) => dispatch(verifyOtpCode(payload)).unwrap(),
     [dispatch]
   );
 
@@ -58,6 +64,7 @@ export const useAuth = () => {
 
     login,
     register,
+    verifyOtp,
     logout,
     refreshUser,
     clearError,

@@ -51,10 +51,8 @@ const errorMiddleware = (err, req, res, next) => {
     err = new ApiError(statusCode, message);
   }
 
-  // ── Log to console in non-production ──────────────────────────────────
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(`[${req.method}] ${req.originalUrl} → ${err.statusCode}: ${err.message}`);
-  }
+  // ── Log to console unconditionally ──────────────────────────────────
+  console.error(`[${req.method}] ${req.originalUrl} → ${err.statusCode}: ${err.message}`);
 
   // ── Send response ─────────────────────────────────────────────────────
   return res.status(err.statusCode).json({
