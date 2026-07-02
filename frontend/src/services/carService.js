@@ -1,6 +1,13 @@
 import api from './api.js';
 
-export const carService = {
-  getCars: (params) => api.get('/cars', { params }),
-  getCarById: (id) => api.get(`/cars/${id}`),
+const carService = {
+  getCars: async (params = {}) => {
+    return await api.get('/cars', { params });
+  },
+
+  getCarById: async (carId) => {
+    return await api.get(`/cars/${carId}`);
+  },
 };
+
+export default carService;

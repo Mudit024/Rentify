@@ -1,32 +1,49 @@
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Car, CalendarCheck, PlusCircle } from 'lucide-react';
-import { ROUTES } from '../../constants/routes.js';
+import { NavLink } from "react-router-dom";
+import { LayoutDashboard, Car, CalendarCheck, PlusCircle } from "lucide-react";
+import { ROUTES } from "../../constants/routes.js";
 
 const links = [
-  { to: ROUTES.OWNER_DASHBOARD, label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: ROUTES.OWNER_CARS, label: 'My Cars', icon: Car },
-  { to: ROUTES.OWNER_ADD_CAR, label: 'List a Car', icon: PlusCircle },
-  { to: ROUTES.OWNER_BOOKINGS, label: 'Bookings', icon: CalendarCheck },
+  {
+    to: ROUTES.OWNER_DASHBOARD,
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    end: true,
+  },
+  {
+    to: ROUTES.OWNER_CARS,
+    label: "My Cars",
+    icon: Car,
+    end: true,
+  },
+  {
+    to: ROUTES.OWNER_ADD_CAR,
+    label: "List a Car",
+    icon: PlusCircle,
+    end: true,
+  },
+  { to: ROUTES.OWNER_BOOKINGS, label: "Bookings", icon: CalendarCheck },
 ];
 
 const OwnerSidebar = () => (
-  <aside className="w-64 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-luxury-charcoal px-4 py-8">
-    <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Owner Panel</p>
-    <nav className="space-y-1">
+  <aside className="hidden w-66 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-luxury-deep/50 backdrop-blur-md px-4 py-8 lg:block">
+    <p className="mb-6 px-3 text-xs font-bold uppercase tracking-widest text-primary-500">
+      Owner Panel
+    </p>
+    <nav className="space-y-2">
       {links.map(({ to, label, icon: Icon, end }) => (
         <NavLink
           key={to}
           to={to}
           end={end}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+            `flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300 ${
               isActive
-                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? "bg-primary-600 text-white shadow-premium"
+                : "text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-300"
             }`
           }
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4.5 w-4.5" />
           {label}
         </NavLink>
       ))}

@@ -7,16 +7,16 @@ const StatCard = ({ label, value, icon: Icon, accent = 'primary' }) => {
   };
 
   return (
-    <div className="rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+    <div className="rounded-2xl border border-gray-105 dark:border-gray-800/80 bg-white/70 dark:bg-luxury-deep/70 backdrop-blur-md p-6 shadow-sm hover:shadow-premium hover:-translate-y-0.5 transition-all duration-300">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{label}</p>
         {Icon && (
-          <div className={`rounded-lg p-2 ${accents[accent]}`}>
-            <Icon className="h-4 w-4" />
+          <div className={`rounded-xl p-2.5 shadow-sm ${accents[accent]}`}>
+            <Icon className="h-5 w-5" />
           </div>
         )}
       </div>
-      <p className="mt-2 font-display text-2xl font-semibold text-gray-900 dark:text-luxury-ivory">{value}</p>
+      <p className="mt-4 font-display text-3xl font-extrabold text-gray-900 dark:text-luxury-ivory tracking-tight">{value}</p>
     </div>
   );
 };

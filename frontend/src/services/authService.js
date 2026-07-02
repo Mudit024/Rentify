@@ -10,3 +10,5 @@ export const authService = {
     return `${base}?role=${role}`;
   },
 };
+
+export default authService;

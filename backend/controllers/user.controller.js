@@ -1,57 +1,105 @@
 import User from '../models/user.model.js';
 import Car from '../models/car.model.js';
+
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 
-// @route   GET /api/users/profile
+// ======================================================
+// @desc    Get Wishlist
+// @route   GET /api/users/wishlist
 // @access  Private
-export const getProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).populate('wishlist', 'title brand model pricePerDay images');
-  return res.status(200).json(new ApiResponse(200, user.toSafeObject ? user.toSafeObject() : user, 'Profile fetched'));
+// ======================================================
+
+export const getWishlist = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).populate(
+    'wishlist',
+    'title brand model images pricePerDay location isAvailable'
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      user.wishlist,
+      'Wishlist fetched successfully.'
+    )
+  );
 });
 
-// @route   PUT /api/users/profile
-// @access  Private
-export const updateProfile = asyncHandler(async (req, res) => {
-  const { name, phone } = req.body;
-
-  const user = await User.findById(req.user._id);
-  if (!user) throw new ApiError(404, 'User not found');
-
-  if (name) user.name = name;
-  if (phone !== undefined) user.phone = phone;
-
-  await user.save();
-
-  return res.status(200).json(new ApiResponse(200, user.toSafeObject(), 'Profile updated'));
-});
-
+// ======================================================
+// @desc    Add Car To Wishlist
 // @route   POST /api/users/wishlist/:carId
 // @access  Private
+// ======================================================
+
 export const addToWishlist = asyncHandler(async (req, res) => {
   const { carId } = req.params;
 
   const car = await Car.findById(carId);
-  if (!car) throw new ApiError(404, 'Car not found');
 
-  const user = await User.findById(req.user._id);
-  if (!user.wishlist.includes(carId)) {
-    user.wishlist.push(carId);
-    await user.save();
+  if (!car) {
+    throw new ApiError(404, 'Car not found.');
   }
 
-  return res.status(200).json(new ApiResponse(200, user.wishlist, 'Added to wishlist'));
+  if (!car.isAvailable) {
+    throw new ApiError(400, 'This car is currently unavailable.');
+  }
+
+  const user = await User.findById(req.user._id);
+
+  const alreadyExists = user.wishlist.some(
+    (id) => id.toString() === carId
+  );
+
+  if (alreadyExists) {
+    throw new ApiError(400, 'Car already exists in wishlist.');
+  }
+
+  user.wishlist.push(carId);
+
+  await user.save();
+
+  const updatedUser = await User.findById(req.user._id).populate(
+    'wishlist',
+    'title brand model images pricePerDay location isAvailable'
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser.wishlist,
+      'Car added to wishlist.'
+    )
+  );
 });
 
+// ======================================================
+// @desc    Remove Car From Wishlist
 // @route   DELETE /api/users/wishlist/:carId
 // @access  Private
+// ======================================================
+
 export const removeFromWishlist = asyncHandler(async (req, res) => {
   const { carId } = req.params;
 
   const user = await User.findById(req.user._id);
-  user.wishlist = user.wishlist.filter((id) => id.toString() !== carId);
+
+  user.wishlist = user.wishlist.filter(
+    (id) => id.toString() !== carId
+  );
+
   await user.save();
 
-  return res.status(200).json(new ApiResponse(200, user.wishlist, 'Removed from wishlist'));
+  const updatedUser = await User.findById(req.user._id).populate(
+    'wishlist',
+    'title brand model images pricePerDay location isAvailable'
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedUser.wishlist,
+      'Car removed from wishlist.'
+    )
+  );
 });
