@@ -2,11 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-// import morgan from 'morgan';
-import session from 'express-session';
 
 import connectDB from './config/db.js';
 import passport from './config/passport.js';
+
 import errorMiddleware from './middlewares/error.middleware.js';
 import ApiError from './utils/ApiError.js';
 
@@ -21,10 +20,10 @@ dotenv.config();
 
 const app = express();
 
-// ---------- Core middleware ----------
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+// ===============================
+// Core Middlewares
+// ===============================
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -32,25 +31,36 @@ app.use(
   })
 );
 
-if (process.env.NODE_ENV !== 'production') {
-  // app.use(morgan('dev'));
-}
+app.use(express.json({ limit: '10mb' }));
 
-// express-session is required for passport.initialize() in this version,
-// even though we don't rely on session-based auth (JWT cookie handles that).
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
+  express.urlencoded({
+    extended: true,
+    limit: '10mb',
   })
 );
+
+app.use(cookieParser());
+
 app.use(passport.initialize());
 
-// ---------- Routes ----------
+// ===============================
+// Health Check
+// ===============================
+
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: ' Rentify API is running', data: { timestamp: new Date() } });
+  res.status(200).json({
+    success: true,
+    message: 'Rentify API is running.',
+    data: {
+      timestamp: new Date(),
+    },
+  });
 });
+
+// ===============================
+// Routes
+// ===============================
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -59,22 +69,37 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/owner', ownerRoutes);
 app.use('/api/admin', adminRoutes);
 
-// ---------- 404 for unmatched API routes ----------
+// ===============================
+// 404 Handler
+// ===============================
+
 app.use('/api', (req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.originalUrl}`));
 });
 
-// ---------- Global error handler (always last) ----------
+// ===============================
+// Global Error Middleware
+// ===============================
+
 app.use(errorMiddleware);
 
-// ---------- Start server ----------
+// ===============================
+// Start Server
+// ===============================
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`✅ Server is running`);
-  });
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
 };
 
 startServer();

@@ -1,153 +1,535 @@
 import Car from '../models/car.model.js';
 import Booking from '../models/booking.model.js';
+
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
-import { uploadMultipleImages, deleteImageFromImageKit } from '../services/imagekit.service.js';
 
+import {
+  uploadMultipleImages,
+} from '../services/imagekit.service.js';
+
+
+// ===============================================
+// @desc    Owner Dashboard
 // @route   GET /api/owner/dashboard
-// @access  Private (owner)
+// @access  Private (Owner)
+// ===============================================
+
 export const getOwnerDashboard = asyncHandler(async (req, res) => {
   const ownerId = req.user._id;
 
-  const [totalCars, approvedCars, pendingCars, bookings] = await Promise.all([
-    Car.countDocuments({ owner: ownerId }),
-    Car.countDocuments({ owner: ownerId, approvalStatus: 'approved' }),
-    Car.countDocuments({ owner: ownerId, approvalStatus: 'pending' }),
-    Booking.find({ owner: ownerId }),
+  const [
+    totalCars,
+    activeCars,
+    pausedCars,
+    bookings,
+  ] = await Promise.all([
+    Car.countDocuments({
+      owner: ownerId,
+      isDeleted: false,
+    }),
+
+    Car.countDocuments({
+      owner: ownerId,
+      isAvailable: true,
+      isBlocked: false,
+      isDeleted: false,
+    }),
+
+    Car.countDocuments({
+      owner: ownerId,
+      isAvailable: false,
+      isDeleted: false,
+    }),
+
+    Booking.find({
+      owner: ownerId,
+    }),
   ]);
 
-  const totalBookings = bookings.length;
-  const pendingBookings = bookings.filter((b) => b.bookingStatus === 'pending').length;
-  const completedBookings = bookings.filter((b) => b.bookingStatus === 'completed').length;
+  const pendingBookings = bookings.filter(
+    (booking) => booking.bookingStatus === 'pending'
+  ).length;
+
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.bookingStatus === 'confirmed'
+  ).length;
+
+  const completedBookings = bookings.filter(
+    (booking) => booking.bookingStatus === 'completed'
+  ).length;
+
+  const cancelledBookings = bookings.filter(
+    (booking) => booking.bookingStatus === 'cancelled'
+  ).length;
+
   const totalEarnings = bookings
-    .filter((b) => b.paymentStatus === 'paid')
-    .reduce((sum, b) => sum + b.totalPrice, 0);
+    .filter((booking) => booking.bookingStatus === 'completed')
+    .reduce((sum, booking) => sum + booking.totalPrice, 0);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      { totalCars, approvedCars, pendingCars, totalBookings, pendingBookings, completedBookings, totalEarnings },
-      'Owner dashboard stats fetched'
+      {
+        totalCars,
+        activeCars,
+        pausedCars,
+
+        totalBookings: bookings.length,
+
+        pendingBookings,
+        confirmedBookings,
+        completedBookings,
+        cancelledBookings,
+
+        totalEarnings,
+      },
+      'Dashboard fetched successfully'
     )
   );
 });
 
+
+
+// ===============================================
+// @desc    Create New Car
 // @route   POST /api/owner/cars
-// @access  Private (owner)
+// @access  Private (Owner)
+// ===============================================
+
 export const createCar = asyncHandler(async (req, res) => {
+
   if (!req.files || req.files.length === 0) {
-    throw new ApiError(400, 'At least one car image is required');
+    throw new ApiError(
+      400,
+      'At least one car image is required.'
+    );
   }
 
   const images = await uploadMultipleImages(req.files);
 
   const car = await Car.create({
-    ...req.body,
-    owner: req.user._id,
+
+    title: req.body.title,
+    brand: req.body.brand,
+    model: req.body.model,
+    year: req.body.year,
+
+    fuelType: req.body.fuelType,
+    transmission: req.body.transmission,
+
+    seats: req.body.seats,
+    mileage: req.body.mileage,
+
+    color: req.body.color,
+
+    pricePerDay: req.body.pricePerDay,
+
+    location: req.body.location,
+
+    description: req.body.description,
+
     images,
-    approvalStatus: 'pending', // every new listing must be moderated
+
+    owner: req.user._id,
+
+    isAvailable: true,
+
   });
 
-  return res.status(201).json(new ApiResponse(201, car, 'Car listed successfully and is pending admin approval'));
+  return res.status(201).json(
+    new ApiResponse(
+      201,
+      car,
+      'Car listed successfully.'
+    )
+  );
+
 });
 
+// ===============================================
+// @desc    Get All Owner Cars
 // @route   GET /api/owner/cars
-// @access  Private (owner)
+// @access  Private (Owner)
+// ===============================================
+
 export const getOwnerCars = asyncHandler(async (req, res) => {
-  const cars = await Car.find({ owner: req.user._id }).sort('-createdAt');
-  return res.status(200).json(new ApiResponse(200, cars, 'Your cars fetched'));
+
+  const cars = await Car.find({
+    owner: req.user._id,
+    isDeleted: false,
+  }).sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      cars,
+      'Owner cars fetched successfully.'
+    )
+  );
+
 });
 
+
+
+// ===============================================
+// @desc    Get Single Owner Car
+// @route   GET /api/owner/cars/:id
+// @access  Private (Owner)
+// ===============================================
+
+export const getOwnerCarById = asyncHandler(async (req, res) => {
+
+  const car = await Car.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+
+  if (!car) {
+    throw new ApiError(404, 'Car not found.');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      car,
+      'Car fetched successfully.'
+    )
+  );
+
+});
+
+
+
+// ===============================================
+// @desc    Update Owner Car
 // @route   PUT /api/owner/cars/:id
-// @access  Private (owner, own car only)
+// @access  Private (Owner)
+// ===============================================
+
 export const updateOwnerCar = asyncHandler(async (req, res) => {
-  const car = await Car.findById(req.params.id);
-  if (!car) throw new ApiError(404, 'Car not found');
-  if (car.owner.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, 'You can only edit your own cars');
+
+  const car = await Car.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+
+  if (!car) {
+    throw new ApiError(404, 'Car not found.');
   }
 
   const editableFields = [
-    'title', 'brand', 'model', 'year', 'fuelType', 'transmission',
-    'seats', 'mileage', 'color', 'pricePerDay', 'location', 'description', 'isAvailable',
+    'title',
+    'brand',
+    'model',
+    'year',
+    'fuelType',
+    'transmission',
+    'seats',
+    'mileage',
+    'color',
+    'pricePerDay',
+    'location',
+    'description',
   ];
+
   editableFields.forEach((field) => {
-    if (req.body[field] !== undefined) car[field] = req.body[field];
+    if (req.body[field] !== undefined) {
+      car[field] = req.body[field];
+    }
   });
 
-  // New images appended (optional on update)
+  // Upload New Images
   if (req.files && req.files.length > 0) {
-    const newImages = await uploadMultipleImages(req.files);
-    car.images.push(...newImages);
-  }
 
-  // Any edit to a previously approved/rejected car sends it back for re-moderation
-  car.approvalStatus = 'pending';
-  car.rejectionReason = '';
+    const uploadedImages = await uploadMultipleImages(req.files);
+
+    car.images.push(...uploadedImages);
+
+  }
 
   await car.save();
 
-  return res.status(200).json(new ApiResponse(200, car, 'Car updated and resubmitted for approval'));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      car,
+      'Car updated successfully.'
+    )
+  );
+
 });
 
+// ===============================================
+// @desc    Toggle Car Availability
+// @route   PATCH /api/owner/cars/:id/availability
+// @access  Private (Owner)
+// ===============================================
+
+export const toggleCarAvailability = asyncHandler(async (req, res) => {
+
+  const { isAvailable } = req.body;
+
+  if (typeof isAvailable !== 'boolean') {
+    throw new ApiError(
+      400,
+      'isAvailable must be true or false.'
+    );
+  }
+
+  const car = await Car.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+
+  if (!car) {
+    throw new ApiError(404, 'Car not found.');
+  }
+
+  car.isAvailable = isAvailable;
+
+  await car.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      car,
+      `Car has been ${
+        isAvailable ? 'made available' : 'paused'
+      } successfully.`
+    )
+  );
+
+});
+
+
+
+// ===============================================
+// @desc    Soft Delete Owner Car
 // @route   DELETE /api/owner/cars/:id
-// @access  Private (owner, own car only)
+// @access  Private (Owner)
+// ===============================================
+
 export const deleteOwnerCar = asyncHandler(async (req, res) => {
-  const car = await Car.findById(req.params.id);
-  if (!car) throw new ApiError(404, 'Car not found');
-  if (car.owner.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, 'You can only delete your own cars');
+
+  const car = await Car.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+
+  if (!car) {
+    throw new ApiError(404, 'Car not found.');
   }
 
-  const activeBooking = await Booking.findOne({ car: car._id, bookingStatus: { $in: ['pending', 'approved'] } });
+  // Prevent deletion if active bookings exist
+  const activeBooking = await Booking.findOne({
+    car: car._id,
+    bookingStatus: {
+      $in: ['pending', 'confirmed'],
+    },
+  });
+
   if (activeBooking) {
-    throw new ApiError(400, 'Cannot delete a car with active bookings');
+    throw new ApiError(
+      400,
+      'You cannot delete a car with active bookings.'
+    );
   }
 
-  await Promise.all(car.images.map((img) => deleteImageFromImageKit(img.fileId)));
-  await car.deleteOne();
+  // Soft Delete
+  car.isDeleted = true;
+  car.isAvailable = false;
 
-  return res.status(200).json(new ApiResponse(200, null, 'Car deleted successfully'));
+  await car.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      null,
+      'Car deleted successfully.'
+    )
+  );
+
 });
 
+
+// ===============================================
+// @desc    Get All Owner Bookings
 // @route   GET /api/owner/bookings
-// @access  Private (owner)
-export const getOwnerBookings = asyncHandler(async (req, res) => {
-  const bookings = await Booking.find({ owner: req.user._id })
-    .sort('-createdAt')
-    .populate('car', 'title brand model images')
-    .populate('user', 'name email phone');
+// @access  Private (Owner)
+// ===============================================
 
-  return res.status(200).json(new ApiResponse(200, bookings, 'Bookings on your cars fetched'));
+export const getOwnerBookings = asyncHandler(async (req, res) => {
+
+  const bookings = await Booking.find({
+    owner: req.user._id,
+  })
+    .sort({ createdAt: -1 })
+    .populate('user', 'name email phone avatar')
+    .populate('car', 'title brand model images pricePerDay');
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      bookings,
+      'Bookings fetched successfully.'
+    )
+  );
+
 });
 
-// @route   PUT /api/owner/bookings/:id
-// @access  Private (owner, own car's booking only)
-export const updateBookingStatus = asyncHandler(async (req, res) => {
-  const { bookingStatus, paymentStatus } = req.body;
-  const allowedStatuses = ['approved', 'rejected', 'completed'];
 
-  const booking = await Booking.findById(req.params.id);
-  if (!booking) throw new ApiError(404, 'Booking not found');
-  if (booking.owner.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, 'You can only manage bookings on your own cars');
+
+// ===============================================
+// @desc    Get Single Booking
+// @route   GET /api/owner/bookings/:id
+// @access  Private (Owner)
+// ===============================================
+
+export const getOwnerBookingById = asyncHandler(async (req, res) => {
+
+  const booking = await Booking.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  })
+    .populate('user', 'name email phone avatar')
+    .populate('car', 'title brand model images pricePerDay');
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found.');
   }
 
-  if (bookingStatus) {
-    if (!allowedStatuses.includes(bookingStatus)) {
-      throw new ApiError(400, 'Invalid booking status');
-    }
-    booking.bookingStatus = bookingStatus;
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      booking,
+      'Booking fetched successfully.'
+    )
+  );
+
+});
+
+
+
+// ===============================================
+// @desc    Confirm Booking
+// @route   PATCH /api/owner/bookings/:id/confirm
+// @access  Private (Owner)
+// ===============================================
+
+export const confirmBooking = asyncHandler(async (req, res) => {
+
+  const booking = await Booking.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found.');
   }
-  if (paymentStatus) {
-    if (!['unpaid', 'paid'].includes(paymentStatus)) {
-      throw new ApiError(400, 'Invalid payment status');
-    }
-    booking.paymentStatus = paymentStatus;
+
+  if (booking.bookingStatus !== 'pending') {
+    throw new ApiError(
+      400,
+      'Only pending bookings can be confirmed.'
+    );
   }
+
+  booking.bookingStatus = 'confirmed';
 
   await booking.save();
 
-  return res.status(200).json(new ApiResponse(200, booking, 'Booking updated'));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      booking,
+      'Booking confirmed successfully.'
+    )
+  );
+
+});
+
+
+
+// ===============================================
+// @desc    Cancel Booking
+// @route   PATCH /api/owner/bookings/:id/cancel
+// @access  Private (Owner)
+// ===============================================
+
+export const cancelBooking = asyncHandler(async (req, res) => {
+
+  const booking = await Booking.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found.');
+  }
+
+  if (booking.bookingStatus !== 'pending') {
+    throw new ApiError(
+      400,
+      'Only pending bookings can be cancelled.'
+    );
+  }
+
+  booking.bookingStatus = 'cancelled';
+
+  await booking.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      booking,
+      'Booking cancelled successfully.'
+    )
+  );
+
+});
+
+
+
+// ===============================================
+// @desc    Complete Booking
+// @route   PATCH /api/owner/bookings/:id/complete
+// @access  Private (Owner)
+// ===============================================
+
+export const completeBooking = asyncHandler(async (req, res) => {
+
+  const booking = await Booking.findOne({
+    _id: req.params.id,
+    owner: req.user._id,
+  });
+
+  if (!booking) {
+    throw new ApiError(404, 'Booking not found.');
+  }
+
+  if (booking.bookingStatus !== 'confirmed') {
+    throw new ApiError(
+      400,
+      'Only confirmed bookings can be completed.'
+    );
+  }
+
+  booking.bookingStatus = 'completed';
+
+  await booking.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      booking,
+      'Trip completed successfully.'
+    )
+  );
+
 });

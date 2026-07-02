@@ -1,7 +1,17 @@
 import api from './api.js';
 
-export const bookingService = {
-  createBooking: (payload) => api.post('/bookings', payload),
-  getMyBookings: () => api.get('/bookings/my'),
-  cancelBooking: (id) => api.delete(`/bookings/${id}`),
+const bookingService = {
+  createBooking: async (payload) => {
+    return await api.post('/bookings', payload);
+  },
+
+  getMyBookings: async () => {
+    return await api.get('/bookings/my');
+  },
+
+  cancelBooking: async (bookingId) => {
+    return await api.delete(`/bookings/${bookingId}`);
+  },
 };
+
+export default bookingService;

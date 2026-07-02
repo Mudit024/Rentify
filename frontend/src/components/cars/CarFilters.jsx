@@ -11,7 +11,7 @@ const CarFilters = ({ filters, onChange, onReset }) => {
     <div className="space-y-5 rounded-xl2 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-base font-semibold text-gray-900 dark:text-luxury-ivory">Filters</h3>
-        <button onClick={onReset} className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600">
+        <button   type="button" onClick={onReset} className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600">
           <X className="h-3 w-3" /> Reset
         </button>
       </div>

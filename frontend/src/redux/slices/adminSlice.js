@@ -1,134 +1,247 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { adminService } from '../../services/adminService.js';
+import adminService from '../../services/adminService.js';
 
-export const fetchAdminDashboard = createAsyncThunk('admin/fetchDashboard', async (_, { rejectWithValue }) => {
-  try {
-    const res = await adminService.getDashboard();
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.message);
-  }
-});
+// =======================
+// Async Thunks
+// =======================
 
-export const fetchPendingCars = createAsyncThunk('admin/fetchPendingCars', async (_, { rejectWithValue }) => {
-  try {
-    const res = await adminService.getPendingCars();
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.message);
-  }
-});
-
-export const approveCarListing = createAsyncThunk('admin/approveCar', async (id, { rejectWithValue }) => {
-  try {
-    const res = await adminService.approveCar(id);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.message);
-  }
-});
-
-export const rejectCarListing = createAsyncThunk(
-  'admin/rejectCar',
-  async ({ id, rejectionReason }, { rejectWithValue }) => {
+export const fetchAdminDashboard = createAsyncThunk(
+  'admin/fetchDashboard',
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await adminService.rejectCar(id, rejectionReason);
-      return res.data;
+      return await adminService.getDashboard();
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-export const adminDeleteCarListing = createAsyncThunk('admin/deleteCar', async (id, { rejectWithValue }) => {
-  try {
-    await adminService.deleteCar(id);
-    return id;
-  } catch (err) {
-    return rejectWithValue(err.message);
+export const fetchAllCars = createAsyncThunk(
+  'admin/fetchAllCars',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await adminService.getAllCars();
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-});
+);
 
-export const fetchAllUsers = createAsyncThunk('admin/fetchUsers', async (role, { rejectWithValue }) => {
-  try {
-    const res = await adminService.getAllUsers(role);
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.message);
+export const blockCar = createAsyncThunk(
+  'admin/blockCar',
+  async (carId, { rejectWithValue }) => {
+    try {
+      return await adminService.blockCar(carId);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-});
+);
 
-export const updateUserRoleThunk = createAsyncThunk(
+export const unblockCar = createAsyncThunk(
+  'admin/unblockCar',
+  async (carId, { rejectWithValue }) => {
+    try {
+      return await adminService.unblockCar(carId);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const deleteCar = createAsyncThunk(
+  'admin/deleteCar',
+  async (carId, { rejectWithValue }) => {
+    try {
+      await adminService.deleteCar(carId);
+      return carId;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const fetchAllUsers = createAsyncThunk(
+  'admin/fetchUsers',
+  async (role, { rejectWithValue }) => {
+    try {
+      return await adminService.getAllUsers(role);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const blockUser = createAsyncThunk(
+  'admin/blockUser',
+  async (userId, { rejectWithValue }) => {
+    try {
+      return await adminService.blockUser(userId);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const unblockUser = createAsyncThunk(
+  'admin/unblockUser',
+  async (userId, { rejectWithValue }) => {
+    try {
+      return await adminService.unblockUser(userId);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const updateUserRole = createAsyncThunk(
   'admin/updateUserRole',
-  async ({ id, role }, { rejectWithValue }) => {
+  async ({ userId, role }, { rejectWithValue }) => {
     try {
-      const res = await adminService.updateUserRole(id, role);
-      return res.data;
+      return await adminService.updateUserRole(userId, role);
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-export const fetchAllBookings = createAsyncThunk('admin/fetchAllBookings', async (_, { rejectWithValue }) => {
-  try {
-    const res = await adminService.getAllBookings();
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.message);
+export const fetchAllBookings = createAsyncThunk(
+  'admin/fetchBookings',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await adminService.getAllBookings();
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-});
+);
+
+// =======================
+// Initial State
+// =======================
 
 const initialState = {
   dashboard: null,
-  pendingCars: [],
+  cars: [],
   users: [],
   bookings: [],
   status: 'idle',
   error: null,
 };
 
+// =======================
+// Slice
+// =======================
+
 const adminSlice = createSlice({
   name: 'admin',
+
   initialState,
+
   reducers: {
     clearAdminError: (state) => {
       state.error = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
+
+      // Dashboard
+
       .addCase(fetchAdminDashboard.fulfilled, (state, action) => {
         state.dashboard = action.payload;
       })
-      .addCase(fetchPendingCars.pending, (state) => {
+
+      // Cars
+
+      .addCase(fetchAllCars.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
-      .addCase(fetchPendingCars.fulfilled, (state, action) => {
+
+      .addCase(fetchAllCars.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.pendingCars = action.payload;
+        state.cars = action.payload;
       })
-      .addCase(approveCarListing.fulfilled, (state, action) => {
-        state.pendingCars = state.pendingCars.filter((c) => c._id !== action.payload._id);
+
+      .addCase(fetchAllCars.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       })
-      .addCase(rejectCarListing.fulfilled, (state, action) => {
-        state.pendingCars = state.pendingCars.filter((c) => c._id !== action.payload._id);
+
+      .addCase(blockCar.fulfilled, (state, action) => {
+        const index = state.cars.findIndex(
+          (car) => car._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.cars[index] = action.payload;
+        }
       })
-      .addCase(adminDeleteCarListing.fulfilled, (state, action) => {
-        state.pendingCars = state.pendingCars.filter((c) => c._id !== action.payload);
+
+      .addCase(unblockCar.fulfilled, (state, action) => {
+        const index = state.cars.findIndex(
+          (car) => car._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.cars[index] = action.payload;
+        }
       })
+
+      .addCase(deleteCar.fulfilled, (state, action) => {
+        state.cars = state.cars.filter(
+          (car) => car._id !== action.payload
+        );
+      })
+
+      // Users
+
       .addCase(fetchAllUsers.fulfilled, (state, action) => {
         state.users = action.payload;
       })
-      .addCase(updateUserRoleThunk.fulfilled, (state, action) => {
-        const idx = state.users.findIndex((u) => u._id === action.payload.id || u._id === action.payload._id);
-        if (idx !== -1) state.users[idx] = { ...state.users[idx], role: action.payload.role };
+
+      .addCase(blockUser.fulfilled, (state, action) => {
+        const index = state.users.findIndex(
+          (user) => user._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
       })
+
+      .addCase(unblockUser.fulfilled, (state, action) => {
+        const index = state.users.findIndex(
+          (user) => user._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
+      })
+
+      .addCase(updateUserRole.fulfilled, (state, action) => {
+        const index = state.users.findIndex(
+          (user) => user._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.users[index] = action.payload;
+        }
+      })
+
+      // Bookings
+
       .addCase(fetchAllBookings.fulfilled, (state, action) => {
         state.bookings = action.payload;
       });
   },
 });
 
-export const { clearAdminError } = adminSlice.actions;
+export const {
+  clearAdminError,
+} = adminSlice.actions;
+
 export default adminSlice.reducer;

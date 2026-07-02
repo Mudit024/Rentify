@@ -17,6 +17,7 @@ const CarCard = ({ car, onToggleWishlist, isWishlisted = false }) => {
         <img src={image} alt={car.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {onToggleWishlist && (
           <button
+              type="button"
             onClick={(e) => {
               e.preventDefault();
               onToggleWishlist(car._id);

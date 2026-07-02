@@ -4,13 +4,13 @@ import { ROUTES } from '../../constants/routes.js';
 
 const links = [
   { to: ROUTES.ADMIN_DASHBOARD, label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: ROUTES.ADMIN_LISTINGS, label: 'Listing Approvals', icon: ShieldCheck },
-  { to: ROUTES.ADMIN_USERS, label: 'Users', icon: Users },
-  { to: ROUTES.ADMIN_BOOKINGS, label: 'All Bookings', icon: CalendarCheck },
+  { to: ROUTES.ADMIN_LISTINGS, label: 'Listing Approvals', icon: ShieldCheck, end: true },
+  { to: ROUTES.ADMIN_USERS, label: 'Users', icon: Users, end: true },
+  { to: ROUTES.ADMIN_BOOKINGS, label: 'All Bookings', icon: CalendarCheck, end: true },
 ];
 
 const AdminSidebar = () => (
-  <aside className="w-64 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-luxury-charcoal px-4 py-8">
+ <aside className="hidden w-64 shrink-0 border-r border-gray-100 dark:border-gray-800 bg-white dark:bg-luxury-charcoal px-4 py-8 lg:block">
     <p className="mb-4 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Admin Panel</p>
     <nav className="space-y-1">
       {links.map(({ to, label, icon: Icon, end }) => (

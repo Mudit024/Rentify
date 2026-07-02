@@ -1,7 +1,8 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+
 import { fetchCurrentUser } from './redux/slices/authSlice.js';
 import { ROUTES } from './constants/routes.js';
 
@@ -11,15 +12,18 @@ import AuthLayout from './layouts/AuthLayout.jsx';
 import OwnerLayout from './layouts/OwnerLayout.jsx';
 import AdminLayout from './layouts/AdminLayout.jsx';
 
-// Route guards
+// Route Guards
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
 import OwnerRoute from './routes/OwnerRoute.jsx';
 import AdminRoute from './routes/AdminRoute.jsx';
 
-// Spinner for Suspense fallback
+// Common
 import Spinner from './components/common/Spinner.jsx';
 
-// --- Code-split page imports (lazy) ---
+// =======================
+// Lazy Pages
+// =======================
+
 // Public
 const Home = lazy(() => import('./pages/public/Home.jsx'));
 const CarListing = lazy(() => import('./pages/public/CarListing.jsx'));
@@ -32,7 +36,6 @@ const Register = lazy(() => import('./pages/auth/Register.jsx'));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback.jsx'));
 
 // Customer
-const Profile = lazy(() => import('./pages/customer/Profile.jsx'));
 const MyBookings = lazy(() => import('./pages/customer/MyBookings.jsx'));
 const Wishlist = lazy(() => import('./pages/customer/Wishlist.jsx'));
 
@@ -45,7 +48,7 @@ const OwnerBookings = lazy(() => import('./pages/owner/OwnerBookings.jsx'));
 
 // Admin
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'));
-const ApproveListings = lazy(() => import('./pages/admin/ApproveListings.jsx'));
+const ManageCars = lazy(() => import('./pages/admin/ManageCars.jsx'));
 const ManageUsers = lazy(() => import('./pages/admin/ManageUsers.jsx'));
 const AllBookings = lazy(() => import('./pages/admin/AllBookings.jsx'));
 
@@ -53,27 +56,28 @@ const PageFallback = () => <Spinner fullPage />;
 
 const App = () => {
   const dispatch = useDispatch();
-  const theme = useSelector((s) => s.ui.theme);
 
-  // Bootstrap: check if user is already authenticated on first load
-  useEffect(() => {
-    dispatch(fetchCurrentUser());
-  }, [dispatch]);
+  const { theme } = useSelector((state) => state.ui);
+  const { bootstrapped } = useSelector((state) => state.auth);
 
-  // Apply dark/light class to <html>
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
+    if (!bootstrapped) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [bootstrapped, dispatch]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
   return (
-    <BrowserRouter>
+    <>
       <Toaster
         position="top-right"
         toastOptions={{
           className: 'text-sm font-medium',
           style: {
-            background: theme === 'dark' ? '#1f2937' : '#fff',
+            background: theme === 'dark' ? '#1f2937' : '#ffffff',
             color: theme === 'dark' ? '#f8f7f4' : '#111827',
             border: '1px solid',
             borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
@@ -83,57 +87,94 @@ const App = () => {
 
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          {/* ─── Public + Main layout ─── */}
+
+          {/* Public */}
           <Route element={<MainLayout />}>
             <Route path={ROUTES.HOME} element={<Home />} />
             <Route path={ROUTES.CARS} element={<CarListing />} />
             <Route path={ROUTES.CAR_DETAILS} element={<CarDetails />} />
           </Route>
 
-          {/* ─── Auth layout ─── */}
+          {/* Auth */}
           <Route element={<AuthLayout />}>
             <Route path={ROUTES.LOGIN} element={<Login />} />
             <Route path={ROUTES.REGISTER} element={<Register />} />
           </Route>
 
-          {/* ─── Google OAuth callback (no layout needed) ─── */}
-          <Route path={ROUTES.GOOGLE_SUCCESS} element={<GoogleCallback />} />
+          {/* Google OAuth */}
+          <Route
+            path={ROUTES.GOOGLE_SUCCESS}
+            element={<GoogleCallback />}
+          />
 
-          {/* ─── Customer protected routes ─── */}
+          {/* Customer */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
-              <Route path={ROUTES.PROFILE} element={<Profile />} />
-              <Route path={ROUTES.MY_BOOKINGS} element={<MyBookings />} />
-              <Route path={ROUTES.WISHLIST} element={<Wishlist />} />
+              <Route
+                path={ROUTES.MY_BOOKINGS}
+                element={<MyBookings />}
+              />
+              <Route
+                path={ROUTES.WISHLIST}
+                element={<Wishlist />}
+              />
             </Route>
           </Route>
 
-          {/* ─── Owner routes ─── */}
+          {/* Owner */}
           <Route element={<OwnerRoute />}>
             <Route element={<OwnerLayout />}>
-              <Route path={ROUTES.OWNER_DASHBOARD} element={<OwnerDashboard />} />
-              <Route path={ROUTES.OWNER_CARS} element={<MyCars />} />
-              <Route path={ROUTES.OWNER_ADD_CAR} element={<AddCar />} />
-              <Route path={ROUTES.OWNER_EDIT_CAR} element={<EditCar />} />
-              <Route path={ROUTES.OWNER_BOOKINGS} element={<OwnerBookings />} />
+              <Route
+                path={ROUTES.OWNER_DASHBOARD}
+                element={<OwnerDashboard />}
+              />
+              <Route
+                path={ROUTES.OWNER_CARS}
+                element={<MyCars />}
+              />
+              <Route
+                path={ROUTES.OWNER_ADD_CAR}
+                element={<AddCar />}
+              />
+              <Route
+                path={ROUTES.OWNER_EDIT_CAR}
+                element={<EditCar />}
+              />
+              <Route
+                path={ROUTES.OWNER_BOOKINGS}
+                element={<OwnerBookings />}
+              />
             </Route>
           </Route>
 
-          {/* ─── Admin routes ─── */}
+          {/* Admin */}
           <Route element={<AdminRoute />}>
             <Route element={<AdminLayout />}>
-              <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
-              <Route path={ROUTES.ADMIN_LISTINGS} element={<ApproveListings />} />
-              <Route path={ROUTES.ADMIN_USERS} element={<ManageUsers />} />
-              <Route path={ROUTES.ADMIN_BOOKINGS} element={<AllBookings />} />
+              <Route
+                path={ROUTES.ADMIN_DASHBOARD}
+                element={<AdminDashboard />}
+              />
+              <Route
+                path={ROUTES.ADMIN_CARS}
+                element={<ManageCars />}
+              />
+              <Route
+                path={ROUTES.ADMIN_USERS}
+                element={<ManageUsers />}
+              />
+              <Route
+                path={ROUTES.ADMIN_BOOKINGS}
+                element={<AllBookings />}
+              />
             </Route>
           </Route>
 
-          {/* ─── 404 ─── */}
-          <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </>
   );
 };
 
