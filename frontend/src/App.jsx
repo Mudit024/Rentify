@@ -92,7 +92,6 @@ const App = () => {
           <Route element={<MainLayout />}>
             <Route path={ROUTES.HOME} element={<Home />} />
             <Route path={ROUTES.CARS} element={<CarListing />} />
-            <Route path={ROUTES.CAR_DETAILS} element={<CarDetails />} />
           </Route>
 
           {/* Auth */}
@@ -117,6 +116,10 @@ const App = () => {
               <Route
                 path={ROUTES.WISHLIST}
                 element={<Wishlist />}
+              />
+              <Route
+                path={ROUTES.CAR_DETAILS}
+                element={<CarDetails />}
               />
             </Route>
           </Route>
