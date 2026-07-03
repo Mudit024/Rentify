@@ -2,7 +2,7 @@ import imagekit from '../config/imagekit.js';
 import ApiError from '../utils/ApiError.js';
 
 // Uploads a single in-memory file (from multer) to ImageKit
-export const uploadImageToImageKit = async (file, folder = 'driveease/cars') => {
+export const uploadImageToImageKit = async (file, folder = 'Rentify/cars') => {
   try {
     const result = await imagekit.upload({
       file: file.buffer.toString('base64'),
@@ -16,7 +16,7 @@ export const uploadImageToImageKit = async (file, folder = 'driveease/cars') => 
   }
 };
 
-export const uploadMultipleImages = async (files, folder = 'driveease/cars') => {
+export const uploadMultipleImages = async (files, folder = 'Rentify/cars') => {
   return Promise.all(files.map((file) => uploadImageToImageKit(file, folder)));
 };
 

@@ -1,31 +1,69 @@
-import express from 'express';
+import express from "express";
+
 import {
   getAdminDashboard,
-  getPendingCars,
-  approveCar,
-  rejectCar,
+  getAllCars,
+  blockCar,
+  unblockCar,
   adminDeleteCar,
   getAllUsers,
+  blockUser,
+  unblockUser,
   updateUserRole,
   getAllBookings,
-} from '../controllers/admin.controller.js';
-import authMiddleware from '../middlewares/auth.middleware.js';
-import adminMiddleware from '../middlewares/admin.middleware.js';
+} from "../controllers/admin.controller.js";
+
+import authMiddleware from "../middlewares/auth.middleware.js";
+import adminMiddleware from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
 
+// Authentication
 router.use(authMiddleware, adminMiddleware);
 
-router.get('/dashboard', getAdminDashboard);
+// =====================================
+// Dashboard
+// =====================================
 
-router.get('/cars/pending', getPendingCars);
-router.put('/cars/:id/approve', approveCar);
-router.put('/cars/:id/reject', rejectCar);
-router.delete('/cars/:id', adminDeleteCar);
+router.get("/dashboard", getAdminDashboard);
 
-router.get('/users', getAllUsers);
-router.put('/users/:id/role', updateUserRole);
+// =====================================
+// Cars
+// =====================================
 
-router.get('/bookings', getAllBookings);
+// Get all cars
+router.get("/cars", getAllCars);
+
+// Block Car
+router.patch("/cars/:id/block", blockCar);
+
+// Unblock Car
+router.patch("/cars/:id/unblock", unblockCar);
+
+// Soft Delete Car
+router.delete("/cars/:id", adminDeleteCar);
+
+// =====================================
+// Users
+// =====================================
+
+// Get all users
+router.get("/users", getAllUsers);
+
+// Block User
+router.patch("/users/:id/block", blockUser);
+
+// Unblock User
+router.patch("/users/:id/unblock", unblockUser);
+
+// Change User Role
+router.patch("/users/:id/role", updateUserRole);
+
+// =====================================
+// Bookings
+// =====================================
+
+// Get all bookings
+router.get("/bookings", getAllBookings);
 
 export default router;

@@ -1,42 +1,65 @@
 import ApiError from '../utils/ApiError.js';
 
 const errorMiddleware = (err, req, res, next) => {
-  let error = err;
+  // ── Convert well-known Mongoose / JWT errors into ApiError ─────────────
 
-  // Normalize known non-ApiError errors into ApiError shape
-  if (!(error instanceof ApiError)) {
-    const statusCode = error.statusCode || (error.name === 'ValidationError' ? 400 : 500);
-
-    let message = error.message || 'Internal Server Error';
-
-    // Mongoose duplicate key error
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyValue || {})[0];
-      message = `${field ? field.charAt(0).toUpperCase() + field.slice(1) : 'Field'} already exists`;
-      error = new ApiError(409, message);
-    }
-    // Mongoose CastError (bad ObjectId)
-    else if (error.name === 'CastError') {
-      error = new ApiError(400, `Invalid ${error.path}: ${error.value}`);
-    }
-    // Mongoose validation error
-    else if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((e) => e.message);
-      error = new ApiError(400, messages.join(', '));
-    } else {
-      error = new ApiError(statusCode, message);
-    }
+  // Mongoose duplicate key (e.g. email already exists)
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0] || 'Field';
+    const label = field.charAt(0).toUpperCase() + field.slice(1);
+    err = new ApiError(409, `${label} already exists`);
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err);
+  // Mongoose CastError (invalid ObjectId in URL param)
+  else if (err.name === 'CastError') {
+    err = new ApiError(400, `Invalid ${err.path}: ${err.value}`);
   }
 
-  return res.status(error.statusCode || 500).json({
+  // Mongoose ValidationError (model-level schema validation)
+  else if (err.name === 'ValidationError') {
+    const messages = Object.values(err.errors).map((e) => e.message);
+    err = new ApiError(400, messages.join('. '));
+  }
+
+  // JWT errors — token expired or tampered with
+  else if (err.name === 'JsonWebTokenError') {
+    err = new ApiError(401, 'Invalid token. Please log in again.');
+  }
+  else if (err.name === 'TokenExpiredError') {
+    err = new ApiError(401, 'Session expired. Please log in again.');
+  }
+
+  // CORS error coming from our cors() config
+  else if (err.message?.startsWith('CORS:')) {
+    err = new ApiError(403, err.message);
+  }
+
+  // Multer errors (file upload)
+  else if (err.name === 'MulterError') {
+    const msg = err.code === 'LIMIT_FILE_SIZE'
+      ? 'File too large. Maximum size is 5MB.'
+      : `Upload error: ${err.message}`;
+    err = new ApiError(400, msg);
+  }
+
+  // Anything else not already an ApiError
+  if (!(err instanceof ApiError)) {
+    const statusCode = err.statusCode || err.status || 500;
+    const message = process.env.NODE_ENV === 'production'
+      ? 'Internal Server Error'
+      : err.message || 'Internal Server Error';
+    err = new ApiError(statusCode, message);
+  }
+
+  // ── Log to console unconditionally ──────────────────────────────────
+  console.error(`[${req.method}] ${req.originalUrl} → ${err.statusCode}: ${err.message}`);
+
+  // ── Send response ─────────────────────────────────────────────────────
+  return res.status(err.statusCode).json({
     success: false,
-    message: error.message,
+    message: err.message,
     data: null,
-    error: error.errors?.length ? error.errors : error.message,
+    error: err.errors?.length ? err.errors : err.message,
   });
 };
 

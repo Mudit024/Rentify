@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
       minlength: [2, 'Name must be at least 2 characters'],
       maxlength: [60, 'Name cannot exceed 60 characters'],
     },
+
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -18,73 +19,122 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
     },
+
     password: {
       type: String,
       minlength: [6, 'Password must be at least 6 characters'],
-      select: false, // never returned by default
+      select: false,
     },
+
     phone: {
       type: String,
       trim: true,
       default: '',
+      maxlength: [20, 'Phone number cannot exceed 20 characters'],
     },
+
     avatar: {
-      url: { type: String, default: '' },
-      fileId: { type: String, default: '' },
+      url: {
+        type: String,
+        default: '',
+      },
+      fileId: {
+        type: String,
+        default: '',
+      },
     },
+
     role: {
       type: String,
       enum: ['customer', 'owner', 'admin'],
       default: 'customer',
     },
+
     authProvider: {
       type: String,
       enum: ['local', 'google'],
       default: 'local',
     },
+
     googleId: {
       type: String,
       unique: true,
-      sparse: true, // allows many docs with no googleId
+      sparse: true,
     },
+
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Car',
       },
     ],
-    isVerifiedOwner: {
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    isVerified: {
       type: Boolean,
       default: false,
     },
+
+    verificationOtp: {
+      type: String,
+      default: null,
+    },
+
+    verificationOtpExpiry: {
+      type: Date,
+      default: null,
+    },
+
+    resetPasswordOtp: {
+      type: String,
+      default: null,
+    },
+
+    resetPasswordOtpExpiry: {
+      type: Date,
+      default: null,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-// Hash password before saving, only if it was modified and exists
+// Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next();
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+
   next();
 });
 
+// Compare Password
 userSchema.methods.comparePassword = async function (candidatePassword) {
   if (!this.password) return false;
+
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+// Safe user object
 userSchema.methods.toSafeObject = function () {
   return {
-    id: this._id,
+    _id: this._id,
     name: this.name,
     email: this.email,
     phone: this.phone,
     avatar: this.avatar,
     role: this.role,
     authProvider: this.authProvider,
-    isVerifiedOwner: this.isVerifiedOwner,
+    isActive: this.isActive,
+    isVerified: this.isVerified,
     createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
   };
 };
 
