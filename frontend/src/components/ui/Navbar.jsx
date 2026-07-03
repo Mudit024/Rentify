@@ -8,6 +8,7 @@ import {
   Heart,
   LogOut,
   ArrowLeft,
+  Navigation,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,7 +42,7 @@ const Navbar = () => {
       ? ROUTES.ADMIN_DASHBOARD
       : role === ROLES.OWNER
         ? ROUTES.OWNER_DASHBOARD
-        : ROUTES.MY_BOOKINGS;
+        : ROUTES.CUSTOMER_DASHBOARD;
 
   const handleLogout = async () => {
     try {
@@ -72,12 +73,14 @@ const Navbar = () => {
           )}
 
           <Link to={isAuthenticated && (role === ROLES.OWNER || role === ROLES.ADMIN) ? dashboardRoute : ROUTES.HOME} className="flex items-center gap-2.5 group">
-            <div className="rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 p-2 shadow-premium group-hover:scale-105 transition-transform duration-300">
-              <Car className="h-5.5 w-5.5 text-white" />
+            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 via-indigo-500 to-luxury-gold p-[2px] shadow-premium group-hover:rotate-6 group-hover:scale-105 transition-all duration-500">
+              <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-white dark:bg-luxury-deep">
+                <Car className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+              </div>
             </div>
 
-            <span className="font-display text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              Rent<span className="text-primary-500">ify</span>
+            <span className="font-display text-2.5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-primary-500 to-luxury-gold dark:from-white dark:via-primary-400 dark:to-luxury-gold">
+              Rentify
             </span>
           </Link>
         </div>
@@ -93,6 +96,12 @@ const Navbar = () => {
             <NavLink to={ROUTES.CARS} className={navLinkClass}>
               Browse Cars
             </NavLink>
+
+            {isAuthenticated && role === ROLES.CUSTOMER && (
+              <NavLink to={ROUTES.ACTIVE_RENTAL} className={navLinkClass}>
+                Active Rental
+              </NavLink>
+            )}
           </div>
         )}
 
@@ -154,6 +163,15 @@ const Navbar = () => {
 
                     {role === ROLES.CUSTOMER && (
                       <>
+                        <Link
+                          to={ROUTES.ACTIVE_RENTAL}
+                          onClick={() => setProfileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                        >
+                          <Navigation className="h-4 w-4 text-primary-500" />
+                          Active Rental
+                        </Link>
+
                         <Link
                           to={ROUTES.MY_BOOKINGS}
                           onClick={() => setProfileMenuOpen(false)}
@@ -234,6 +252,13 @@ const Navbar = () => {
 
                 {role === ROLES.CUSTOMER && (
                   <>
+                    <Link
+                      to={ROUTES.ACTIVE_RENTAL}
+                      onClick={() => dispatch(closeMobileMenu())}
+                    >
+                      Active Rental
+                    </Link>
+
                     <Link
                       to={ROUTES.MY_BOOKINGS}
                       onClick={() => dispatch(closeMobileMenu())}

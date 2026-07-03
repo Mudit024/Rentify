@@ -27,6 +27,17 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const verifyOtpCode = createAsyncThunk(
+  'auth/verifyOtp',
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await authService.verifyOtp(payload);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
   async (_, { rejectWithValue }) => {
@@ -91,11 +102,36 @@ const authSlice = createSlice({
 
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
+        if (action.payload?.status === 'PENDING_VERIFICATION') {
+          state.user = null;
+          state.isAuthenticated = false;
+        } else {
+          state.user = action.payload;
+          state.isAuthenticated = true;
+        }
+      })
+
+      .addCase(registerUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // =======================
+      // Verify OTP
+      // =======================
+
+      .addCase(verifyOtpCode.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+
+      .addCase(verifyOtpCode.fulfilled, (state, action) => {
+        state.status = 'succeeded';
         state.user = action.payload;
         state.isAuthenticated = true;
       })
 
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(verifyOtpCode.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
@@ -111,8 +147,13 @@ const authSlice = createSlice({
 
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload;
-        state.isAuthenticated = true;
+        if (action.payload?.status === 'PENDING_VERIFICATION') {
+          state.user = null;
+          state.isAuthenticated = false;
+        } else {
+          state.user = action.payload;
+          state.isAuthenticated = true;
+        }
       })
 
       .addCase(loginUser.rejected, (state, action) => {

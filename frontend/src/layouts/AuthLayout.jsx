@@ -26,13 +26,15 @@ const AuthLayout = () => {
 
         <Link
           to={ROUTES.HOME}
-          className="mb-5 flex items-center gap-2"
+          className="mb-5 flex items-center gap-2.5 group"
         >
-          <div className="rounded-lg bg-primary-600 p-2">
-            <Car className="h-5 w-5 text-white" />
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 via-indigo-500 to-luxury-gold p-[2px] shadow-premium group-hover:rotate-6 group-hover:scale-105 transition-all duration-500">
+            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-white dark:bg-luxury-deep">
+              <Car className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            </div>
           </div>
 
-          <span className="font-display text-xl font-bold text-gray-900 dark:text-luxury-ivory">
+          <span className="font-display text-2.5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-primary-500 to-luxury-gold dark:from-white dark:via-primary-400 dark:to-luxury-gold">
             Rentify
           </span>
         </Link>

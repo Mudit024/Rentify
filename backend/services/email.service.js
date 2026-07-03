@@ -200,3 +200,63 @@ export const sendBookingCancellationByOwnerEmail = async ({
   }
 };
 
+export const sendVerificationOtpEmail = async ({ to, otp }) => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('SMTP credentials not configured — skipping email send');
+    return;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"Rentify" <${process.env.SMTP_USER}>`,
+      to,
+      subject: 'Verify Your Rentify Account 🔑',
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: auto; border: 1px solid #e5e7eb; padding: 24px; border-radius: 12px;">
+          <h2 style="color:#7c3aed; text-align: center;">Verify Your Email</h2>
+          <p>Thank you for choosing Rentify! Please use the following 6-digit One-Time Password (OTP) to verify your account registration. This OTP is valid for 15 minutes.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #111827; background-color: #f3f4f6; padding: 10px 24px; border-radius: 8px; border: 1px dashed #7c3aed;">
+              ${otp}
+            </span>
+          </div>
+          <p>If you did not initiate this request, please ignore this email.</p>
+          <p style="color:#888;font-size:12px; border-top: 1px solid #e5e7eb; padding-top: 12px;">— The Rentify Team</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error(`Failed to send verification OTP email: ${err.message}`);
+  }
+};
+
+export const sendPasswordResetOtpEmail = async ({ to, otp }) => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('SMTP credentials not configured — skipping email send');
+    return;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"Rentify" <${process.env.SMTP_USER}>`,
+      to,
+      subject: 'Reset Your Rentify Password 🔒',
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: auto; border: 1px solid #e5e7eb; padding: 24px; border-radius: 12px;">
+          <h2 style="color:#7c3aed; text-align: center;">Reset Your Password</h2>
+          <p>You requested a password reset for your Rentify account. Please use the following 6-digit One-Time Password (OTP) to verify the request. This OTP is valid for 15 minutes.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #111827; background-color: #f3f4f6; padding: 10px 24px; border-radius: 8px; border: 1px dashed #7c3aed;">
+              ${otp}
+            </span>
+          </div>
+          <p>If you did not initiate this request, please ignore this email or contact support if you suspect unauthorized access.</p>
+          <p style="color:#888;font-size:12px; border-top: 1px solid #e5e7eb; padding-top: 12px;">— The Rentify Team</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error(`Failed to send password reset OTP email: ${err.message}`);
+  }
+};
+

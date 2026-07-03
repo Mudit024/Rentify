@@ -36,6 +36,8 @@ const Register = lazy(() => import('./pages/auth/Register.jsx'));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback.jsx'));
 
 // Customer
+const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard.jsx'));
+const ActiveRental = lazy(() => import('./pages/customer/ActiveRental.jsx'));
 const MyBookings = lazy(() => import('./pages/customer/MyBookings.jsx'));
 const Wishlist = lazy(() => import('./pages/customer/Wishlist.jsx'));
 
@@ -73,7 +75,7 @@ const App = () => {
   return (
     <>
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           className: 'text-sm font-medium',
           style: {
@@ -92,7 +94,6 @@ const App = () => {
           <Route element={<MainLayout />}>
             <Route path={ROUTES.HOME} element={<Home />} />
             <Route path={ROUTES.CARS} element={<CarListing />} />
-            <Route path={ROUTES.CAR_DETAILS} element={<CarDetails />} />
           </Route>
 
           {/* Auth */}
@@ -111,12 +112,24 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route
+                path={ROUTES.CUSTOMER_DASHBOARD}
+                element={<CustomerDashboard />}
+              />
+              <Route
+                path={ROUTES.ACTIVE_RENTAL}
+                element={<ActiveRental />}
+              />
+              <Route
                 path={ROUTES.MY_BOOKINGS}
                 element={<MyBookings />}
               />
               <Route
                 path={ROUTES.WISHLIST}
                 element={<Wishlist />}
+              />
+              <Route
+                path={ROUTES.CAR_DETAILS}
+                element={<CarDetails />}
               />
             </Route>
           </Route>

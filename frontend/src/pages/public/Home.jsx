@@ -37,21 +37,21 @@ const FAQS = [
 
 const TESTIMONIALS = [
   {
-    name: "Aisha Rahman",
+    name: "Aarav Sharma",
     role: "Frequent Renter",
-    text: "Booked a premium SUV for a weekend road trip in minutes. Seamless experience from start to finish.",
+    text: "Booked a premium SUV for a family trip to Lonavala in minutes. Extremely seamless experience from start to finish.",
     rating: 5,
   },
   {
-    name: "Carlos Mendez",
-    role: "Car Owner",
-    text: "Listed my car and got my first booking within 48 hours. Rentify handles everything — love it.",
+    name: "Karan Malhotra",
+    role: "Car Owner (Host)",
+    text: "Listed my Thar and got my first booking within 48 hours. Rentify makes hosting so effortless and secure.",
     rating: 5,
   },
   {
     name: "Priya Singh",
     role: "Business Traveler",
-    text: "Needed a clean sedan for client meetings. Picked up the keys from a nearby owner — total game changer.",
+    text: "Needed a clean sedan for client meetings in Mumbai. Picked up the keys from a nearby owner — total game changer.",
     rating: 5,
   },
 ];

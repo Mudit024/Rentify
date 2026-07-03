@@ -19,6 +19,8 @@ export const ROUTES = {
   // Customer
   // ==========================
 
+  CUSTOMER_DASHBOARD: '/account/dashboard',
+  ACTIVE_RENTAL: '/account/active-rental',
   MY_BOOKINGS: '/account/bookings',
   WISHLIST: '/account/wishlist',
 
