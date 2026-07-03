@@ -41,7 +41,7 @@ const Navbar = () => {
       ? ROUTES.ADMIN_DASHBOARD
       : role === ROLES.OWNER
         ? ROUTES.OWNER_DASHBOARD
-        : ROUTES.MY_BOOKINGS;
+        : ROUTES.CUSTOMER_DASHBOARD;
 
   const handleLogout = async () => {
     try {

@@ -19,6 +19,7 @@ export const ROUTES = {
   // Customer
   // ==========================
 
+  CUSTOMER_DASHBOARD: '/account/dashboard',
   MY_BOOKINGS: '/account/bookings',
   WISHLIST: '/account/wishlist',
 
