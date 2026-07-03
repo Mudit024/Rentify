@@ -37,6 +37,7 @@ const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback.jsx'));
 
 // Customer
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard.jsx'));
+const ActiveRental = lazy(() => import('./pages/customer/ActiveRental.jsx'));
 const MyBookings = lazy(() => import('./pages/customer/MyBookings.jsx'));
 const Wishlist = lazy(() => import('./pages/customer/Wishlist.jsx'));
 
@@ -113,6 +114,10 @@ const App = () => {
               <Route
                 path={ROUTES.CUSTOMER_DASHBOARD}
                 element={<CustomerDashboard />}
+              />
+              <Route
+                path={ROUTES.ACTIVE_RENTAL}
+                element={<ActiveRental />}
               />
               <Route
                 path={ROUTES.MY_BOOKINGS}

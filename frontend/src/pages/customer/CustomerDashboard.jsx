@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Heart, Car, IndianRupee, ArrowRight, ShieldCheck, Clock, CheckCircle, Phone, MapPin, ExternalLink } from "lucide-react";
-import toast from "react-hot-toast";
+import { Calendar, Heart, Car, IndianRupee, ArrowRight, ShieldCheck, Clock, CheckCircle } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth.js";
 import bookingService from "../../services/bookingService.js";
 import { userService } from "../../services/userService.js";
@@ -18,9 +17,6 @@ const CustomerDashboard = () => {
     totalSpent: 0,
   });
   const [recentBookings, setRecentBookings] = useState([]);
-  const [activeTrip, setActiveTrip] = useState(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [timeLeft, setTimeLeft] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,13 +31,13 @@ const CustomerDashboard = () => {
         const wishlistList = wishlist || [];
 
         const totalSpent = bookingsList.reduce((sum, b) => {
-          if (b.status === "approved" || b.status === "completed") {
+          if (b.bookingStatus === "confirmed" || b.bookingStatus === "completed") {
             return sum + (b.totalPrice || 0);
           }
           return sum;
         }, 0);
 
-        const activeCount = bookingsList.filter((b) => b.status === "approved").length;
+        const activeCount = bookingsList.filter((b) => b.bookingStatus === "confirmed").length;
 
         setStats({
           totalBookings: bookingsList.length,
@@ -51,25 +47,6 @@ const CustomerDashboard = () => {
         });
 
         setRecentBookings(bookingsList.slice(0, 3));
-
-        // Locate active trip: approved booking where current time is between start and end
-        const now = new Date();
-        let trip = bookingsList.find((b) => {
-          const start = new Date(b.pickupDate);
-          const end = new Date(b.returnDate);
-          return b.status === "approved" && now >= start && now <= end;
-        });
-
-        // Demo fallback: if no active booking is found but an approved one exists, treat it as active for demonstration
-        if (!trip) {
-          const approvedTrip = bookingsList.find((b) => b.status === "approved");
-          if (approvedTrip) {
-            trip = approvedTrip;
-            setIsDemoMode(true);
-          }
-        }
-
-        setActiveTrip(trip);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
       } finally {
@@ -79,51 +56,6 @@ const CustomerDashboard = () => {
 
     fetchDashboardData();
   }, []);
-
-  // Live countdown timer logic
-  useEffect(() => {
-    if (!activeTrip) return;
-
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      // If demo mode and the original return date is in the past, mock a target 5 hours and 23 minutes ahead
-      const targetDate = isDemoMode && new Date(activeTrip.returnDate) < now
-        ? new Date(now.getTime() + 5 * 60 * 60 * 1000 + 23 * 60 * 1000)
-        : new Date(activeTrip.returnDate);
-
-      const diff = targetDate.getTime() - now.getTime();
-      if (diff <= 0) {
-        setTimeLeft("Trip completed");
-        return;
-      }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
-    };
-
-    calculateTimeLeft();
-    const interval = setInterval(calculateTimeLeft, 1000);
-
-    return () => clearInterval(interval);
-  }, [activeTrip, isDemoMode]);
-
-  const handleCallOwner = (ownerName, phone) => {
-    if (!phone) {
-      toast.error("Contact phone number is not available.");
-      return;
-    }
-    toast.success(`Calling ${ownerName}: ${phone}`);
-    window.location.href = `tel:${phone}`;
-  };
-
-  const handleGetDirections = (location) => {
-    if (!location) return;
-    toast.success("Opening Google Maps directions...");
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`, "_blank");
-  };
 
   if (loading) {
     return (
@@ -202,83 +134,6 @@ const CustomerDashboard = () => {
         ))}
       </div>
 
-      {/* Ongoing Trip Tracker HUD (Shows at the top when active booking is detected) */}
-      {activeTrip && (
-        <div className="relative overflow-hidden rounded-2xl border border-primary-200 dark:border-primary-900/30 bg-gradient-to-r from-primary-600 to-indigo-600 p-6 sm:p-8 text-white shadow-premium">
-          {/* Light glowing effect circles */}
-          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute -left-16 -bottom-16 h-48 w-48 rounded-full bg-indigo-500/20 blur-2xl" />
-
-          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-            
-            {/* Left side: Vehicle & Live countdown info */}
-            <div className="space-y-3.5 flex-1">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 text-[11px] font-bold text-emerald-300 uppercase tracking-wider animate-pulse">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" /> Active Rental
-                </span>
-                {isDemoMode && (
-                  <span className="inline-flex rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-extrabold text-primary-200 uppercase tracking-wider">
-                    ⚡ Live Demo Mode
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <h3 className="font-display text-2xl sm:text-3xl font-black tracking-tight leading-none">
-                  {activeTrip.car?.brand} {activeTrip.car?.model}
-                </h3>
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-primary-100 font-semibold">
-                  <MapPin className="h-4 w-4 text-emerald-300 shrink-0" /> {activeTrip.car?.location || "Delhi-NCR"}
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <p className="text-xs font-bold text-primary-200 uppercase tracking-wider">Remaining Rental Time</p>
-                <p className="font-mono text-2xl sm:text-3.5xl font-black text-emerald-300 tracking-wider mt-0.5 leading-none">
-                  {timeLeft || "Calculating time…"}
-                </p>
-              </div>
-            </div>
-
-            {/* Right side: Host Details & CTAs */}
-            <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-3.5 shrink-0 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10 max-w-sm w-full md:w-auto">
-              
-              <div className="flex items-center gap-3 flex-1 min-w-[160px]">
-                <div className="h-11 w-11 rounded-full bg-white/20 flex items-center justify-center font-bold text-lg text-white border border-white/20">
-                  {activeTrip.owner?.name?.charAt(0) || "O"}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-primary-200 uppercase tracking-wider leading-none">Your Host</p>
-                  <h4 className="font-display font-extrabold text-sm text-white mt-1 leading-snug truncate">
-                    {activeTrip.owner?.name || "Car Owner"}
-                  </h4>
-                </div>
-              </div>
-
-              <div className="flex md:flex-col lg:flex-row gap-2 w-full sm:w-auto md:w-full lg:w-auto">
-                <button
-                  type="button"
-                  onClick={() => handleGetDirections(activeTrip.car?.location)}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-xs font-bold text-primary-700 shadow-sm hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" /> Directions
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleCallOwner(activeTrip.owner?.name, activeTrip.owner?.phone)}
-                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-600 active:scale-95 transition-all cursor-pointer"
-                >
-                  <Phone className="h-3.5 w-3.5" /> Call Host
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      )}
-
       {/* Main Grid: Bookings & Actions */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Side: Recent Bookings & Actions */}
@@ -328,19 +183,19 @@ const CustomerDashboard = () => {
                       </span>
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold capitalize border ${
-                          b.status === "approved"
+                          b.bookingStatus === "confirmed"
                             ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/30"
-                            : b.status === "pending"
+                            : b.bookingStatus === "pending"
                             ? "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-yellow-400 dark:border-yellow-900/30"
                             : "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950/20 dark:text-gray-400 dark:border-gray-900/30"
                         }`}
                       >
-                        {b.status === "approved" ? (
+                        {b.bookingStatus === "confirmed" ? (
                           <CheckCircle className="h-3 w-3" />
-                        ) : b.status === "pending" ? (
+                        ) : b.bookingStatus === "pending" ? (
                           <Clock className="h-3 w-3" />
                         ) : null}
-                        {b.status}
+                        {b.bookingStatus}
                       </span>
                     </div>
                   </div>
@@ -388,7 +243,7 @@ const CustomerDashboard = () => {
               <div className="p-3 bg-rose-50 dark:bg-rose-950/20 text-rose-500 rounded-xl w-fit">
                 <Heart className="h-5 w-5" />
               </div>
-              <h4 className="font-display font-bold text-sm text-gray-900 dark:text-luxury-ivory group-hover:text-primary-500 transition-colors">
+              <h4 className="font-display font-bold text-sm text-gray-955 dark:text-luxury-ivory group-hover:text-primary-500 transition-colors">
                 Car Wishlist
               </h4>
               <p className="text-xs font-semibold text-gray-400 leading-normal">
@@ -437,7 +292,7 @@ const CustomerDashboard = () => {
           <div className="rounded-2xl border border-primary-100 dark:border-primary-950/20 bg-primary-50/20 dark:bg-primary-950/5 p-5 flex items-start gap-4">
             <ShieldCheck className="h-6 w-6 text-primary-500 shrink-0" />
             <div className="space-y-1">
-              <h4 className="font-display font-bold text-sm text-gray-950 dark:text-luxury-ivory leading-none">
+              <h4 className="font-display font-bold text-sm text-gray-955 dark:text-luxury-ivory leading-none">
                 Verified Renter Profile
               </h4>
               <p className="text-xs font-semibold text-gray-500 leading-normal">

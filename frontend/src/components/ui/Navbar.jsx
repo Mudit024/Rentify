@@ -8,6 +8,7 @@ import {
   Heart,
   LogOut,
   ArrowLeft,
+  Navigation,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -95,6 +96,12 @@ const Navbar = () => {
             <NavLink to={ROUTES.CARS} className={navLinkClass}>
               Browse Cars
             </NavLink>
+
+            {isAuthenticated && role === ROLES.CUSTOMER && (
+              <NavLink to={ROUTES.ACTIVE_RENTAL} className={navLinkClass}>
+                Active Rental
+              </NavLink>
+            )}
           </div>
         )}
 
@@ -156,6 +163,15 @@ const Navbar = () => {
 
                     {role === ROLES.CUSTOMER && (
                       <>
+                        <Link
+                          to={ROUTES.ACTIVE_RENTAL}
+                          onClick={() => setProfileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                        >
+                          <Navigation className="h-4 w-4 text-primary-500" />
+                          Active Rental
+                        </Link>
+
                         <Link
                           to={ROUTES.MY_BOOKINGS}
                           onClick={() => setProfileMenuOpen(false)}
@@ -236,6 +252,13 @@ const Navbar = () => {
 
                 {role === ROLES.CUSTOMER && (
                   <>
+                    <Link
+                      to={ROUTES.ACTIVE_RENTAL}
+                      onClick={() => dispatch(closeMobileMenu())}
+                    >
+                      Active Rental
+                    </Link>
+
                     <Link
                       to={ROUTES.MY_BOOKINGS}
                       onClick={() => dispatch(closeMobileMenu())}

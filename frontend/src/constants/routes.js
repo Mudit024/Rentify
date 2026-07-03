@@ -20,6 +20,7 @@ export const ROUTES = {
   // ==========================
 
   CUSTOMER_DASHBOARD: '/account/dashboard',
+  ACTIVE_RENTAL: '/account/active-rental',
   MY_BOOKINGS: '/account/bookings',
   WISHLIST: '/account/wishlist',
 

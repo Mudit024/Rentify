@@ -105,7 +105,10 @@ bookingSchema.pre('validate', function (next) {
     return next(new Error('Return date must be after pickup date.'));
   }
 
-  if (this.pickupDate && this.pickupDate < new Date()) {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  if (this.pickupDate && this.pickupDate < todayStart) {
     return next(new Error('Pickup date cannot be in the past.'));
   }
 
