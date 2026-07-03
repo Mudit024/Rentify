@@ -4,6 +4,16 @@ import Select from '../common/Select.jsx';
 import Button from '../common/Button.jsx';
 import { FUEL_TYPES, TRANSMISSIONS, SEAT_OPTIONS } from '../../constants/index.js';
 
+const CITIES = [
+  { value: 'Pune', label: 'Pune' },
+  { value: 'Delhi', label: 'Delhi-NCR' },
+  { value: 'Mumbai', label: 'Mumbai' },
+  { value: 'Bangalore', label: 'Bangalore' },
+  { value: 'Hyderabad', label: 'Hyderabad' },
+  { value: 'Chennai', label: 'Chennai' },
+  { value: 'Bellary', label: 'Bellary' },
+];
+
 const CarFilters = ({ filters, onChange, onReset }) => {
   const update = (key) => (e) => onChange({ [key]: e.target.value });
 
@@ -23,7 +33,13 @@ const CarFilters = ({ filters, onChange, onReset }) => {
         onChange={update('q')}
       />
 
-      <Input placeholder="Exact location / City" value={filters.location} onChange={update('location')} />
+      <Select
+        label="City"
+        placeholder="Select City"
+        options={CITIES}
+        value={filters.location}
+        onChange={update('location')}
+      />
 
       <Select
         label="Fuel Type"

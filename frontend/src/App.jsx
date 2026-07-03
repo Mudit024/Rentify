@@ -73,7 +73,7 @@ const App = () => {
   return (
     <>
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           className: 'text-sm font-medium',
           style: {

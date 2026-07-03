@@ -149,35 +149,6 @@ export const login = asyncHandler(async (req, res) => {
     );
   }
 
-  // Handle unverified user login attempt
-  if (!user.isVerified && user.authProvider === "local") {
-    // Generate new OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
-
-    user.verificationOtp = otp;
-    user.verificationOtpExpiry = otpExpiry;
-    await user.save();
-
-    console.log("\n=========================================");
-    console.log(`✉️  MOCK LOGIN-ATTEMPT OTP FOR ${normalizedEmail}: ${otp}`);
-    console.log("=========================================\n");
-
-    // Send real email
-    await sendVerificationOtpEmail({ to: normalizedEmail, otp });
-
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          status: "PENDING_VERIFICATION",
-          email: normalizedEmail,
-        },
-        "Account not verified yet. A fresh verification code has been sent.",
-      ),
-    );
-  }
-
   sendTokenCookie(res, user._id, user.role);
 
   return res.status(200).json(
