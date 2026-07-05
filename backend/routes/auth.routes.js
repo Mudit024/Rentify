@@ -10,6 +10,7 @@ import {
   verifyOtp,
   forgotPassword,
   resetPassword,
+  selectRole,
 } from "../controllers/auth.controller.js";
 
 import {
@@ -45,6 +46,9 @@ router.post("/logout", authMiddleware, logout);
 
 // Current Logged-in User
 router.get("/me", authMiddleware, getMe);
+
+// Select Role (first Google login)
+router.post("/select-role", authMiddleware, selectRole);
 
 // ======================================
 // Google OAuth

@@ -8,6 +8,7 @@ export const authService = {
   resetPassword: (payload) => api.post('/auth/reset-password', payload),
   logout: () => api.post('/auth/logout'),
   getMe: () => api.get('/auth/me'),
+  selectRole: (payload) => api.post('/auth/select-role', payload),
   googleAuthUrl: (role = 'customer') => {
     const base = import.meta.env.VITE_GOOGLE_OAUTH_URL || 'http://localhost:5000/api/auth/google';
     return `${base}?role=${role}`;

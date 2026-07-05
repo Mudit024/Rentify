@@ -61,6 +61,17 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const selectUserRole = createAsyncThunk(
+  'auth/selectRole',
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await authService.selectRole(payload);
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 // =======================
 // Initial State
 // =======================
@@ -202,6 +213,26 @@ const authSlice = createSlice({
       })
 
       .addCase(logoutUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // =======================
+      // Select User Role
+      // =======================
+
+      .addCase(selectUserRole.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+
+      .addCase(selectUserRole.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+
+      .addCase(selectUserRole.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
