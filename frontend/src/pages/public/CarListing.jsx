@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 import {
   fetchCars,
   setFilters,
@@ -118,16 +119,28 @@ const CarListing = () => {
   }, [dispatch]);
 
   const handleToggleWishlist = async (carId) => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      toast.error("Please log in to add cars to your wishlist.");
+      navigate(ROUTES.LOGIN);
+      return;
+    }
+    if (role !== "customer") {
+      toast.error("Wishlist is only available for renters.");
+      return;
+    }
     try {
       if (wishlist.includes(carId)) {
         await userService.removeFromWishlist(carId);
         setWishlist((prev) => prev.filter((id) => id !== carId));
+        toast.success("Removed from wishlist");
       } else {
         await userService.addToWishlist(carId);
         setWishlist((prev) => [...prev, carId]);
+        toast.success("Added to wishlist!");
       }
-    } catch {}
+    } catch (err) {
+      toast.error(err?.message || "Failed to update wishlist.");
+    }
   };
 
   const FiltersPanel = (
@@ -219,7 +232,7 @@ const CarListing = () => {
                     key={car._id}
                     car={car}
                     onToggleWishlist={
-                      isAuthenticated && user?.role === "customer"
+                      !isAuthenticated || role === "customer"
                         ? handleToggleWishlist
                         : undefined
                     }
