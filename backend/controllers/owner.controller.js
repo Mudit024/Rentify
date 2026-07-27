@@ -5,6 +5,7 @@ import { sendBookingAcceptanceEmail, sendBookingCancellationByOwnerEmail } from 
 import asyncHandler from '../utils/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
+import { cleanupExpiredBookings } from '../utils/bookingCleanup.js';
 
 import {
   uploadMultipleImages,
@@ -18,6 +19,7 @@ import {
 // ===============================================
 
 export const getOwnerDashboard = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
   const ownerId = req.user._id;
 
   const [
@@ -366,6 +368,7 @@ export const deleteOwnerCar = asyncHandler(async (req, res) => {
 // ===============================================
 
 export const getOwnerBookings = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
 
   const bookings = await Booking.find({
     owner: req.user._id,

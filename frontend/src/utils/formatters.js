@@ -22,3 +22,12 @@ export const initials = (name = '') =>
     .join('')
     .slice(0, 2)
     .toUpperCase();
+
+export const isPastDate = (date) => {
+  if (!date) return false;
+  const d = new Date(date);
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  return d < todayStart;
+};
+

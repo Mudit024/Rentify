@@ -4,6 +4,7 @@ import Car from "../models/car.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { cleanupExpiredBookings } from "../utils/bookingCleanup.js";
 
 import { sendBookingConfirmationEmail } from "../services/email.service.js";
 
@@ -14,6 +15,7 @@ import { sendBookingConfirmationEmail } from "../services/email.service.js";
 // ======================================================
 
 export const createBooking = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
   const { car: carId, pickupDate, returnDate, pickupLocation } = req.body;
 
   const car = await Car.findById(carId);
@@ -128,6 +130,8 @@ export const createBooking = asyncHandler(async (req, res) => {
 // ======================================================
 
 export const getMyBookings = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
+
   const bookings = await Booking.find({
     user: req.user._id,
   })

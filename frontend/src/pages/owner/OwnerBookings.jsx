@@ -12,7 +12,7 @@ import Spinner from "../../components/common/Spinner.jsx";
 import Button from "../../components/common/Button.jsx";
 import StatusBadge from "../../components/common/StatusBadge.jsx";
 import { BOOKING_STATUS_COLORS } from "../../constants/index.js";
-import { formatCurrency, formatDate } from "../../utils/formatters.js";
+import { formatCurrency, formatDate, isPastDate } from "../../utils/formatters.js";
 
 const OwnerBookings = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,14 @@ const OwnerBookings = () => {
   useEffect(() => {
     dispatch(fetchOwnerBookings());
   }, [dispatch]);
+
+  const activeBookings = bookings.filter((booking) => {
+    // Automatically remove request from dashboard if date is already in past and owner hasn't accepted it
+    if (booking.bookingStatus === "pending" && isPastDate(booking.pickupDate)) {
+      return false;
+    }
+    return true;
+  });
 
   const updateStatus = async (id, bookingStatus, paymentStatus) => {
     try {
@@ -40,7 +48,7 @@ const OwnerBookings = () => {
     }
   };
 
-  if (status === "loading" && bookings.length === 0) {
+  if (status === "loading" && activeBookings.length === 0) {
     return <Spinner fullPage />;
   }
 
@@ -51,11 +59,11 @@ const OwnerBookings = () => {
           Booking Requests
         </h1>
         <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-          {bookings.length} active rental request{bookings.length !== 1 ? "s" : ""} on your cars
+          {activeBookings.length} active rental request{activeBookings.length !== 1 ? "s" : ""} on your cars
         </p>
       </div>
 
-      {bookings.length === 0 ? (
+      {activeBookings.length === 0 ? (
         <EmptyState
           icon={CalendarCheck}
           title="No bookings yet"
@@ -63,7 +71,7 @@ const OwnerBookings = () => {
         />
       ) : (
         <div className="space-y-5">
-          {bookings.map((booking) => {
+          {activeBookings.map((booking) => {
             const customer = booking.user || {};
             return (
               <div

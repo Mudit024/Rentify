@@ -4,7 +4,7 @@ import { Calendar, Heart, Car, IndianRupee, ArrowRight, ShieldCheck, Clock, Chec
 import { useAuth } from "../../hooks/useAuth.js";
 import bookingService from "../../services/bookingService.js";
 import { userService } from "../../services/userService.js";
-import { formatCurrency } from "../../utils/formatters.js";
+import { formatCurrency, isPastDate } from "../../utils/formatters.js";
 import { ROUTES } from "../../constants/routes.js";
 import Button from "../../components/common/Button.jsx";
 
@@ -27,7 +27,10 @@ const CustomerDashboard = () => {
           userService.getWishlist(),
         ]);
 
-        const bookingsList = bookings || [];
+        const rawList = bookings || [];
+        const bookingsList = rawList.filter(
+          (b) => !(b.bookingStatus === "pending" && isPastDate(b.pickupDate))
+        );
         const wishlistList = wishlist || [];
 
         const totalSpent = bookingsList.reduce((sum, b) => {

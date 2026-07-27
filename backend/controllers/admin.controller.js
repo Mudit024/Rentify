@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { cleanupExpiredBookings } from "../utils/bookingCleanup.js";
 
 // ======================================================
 // @desc    Admin Dashboard
@@ -13,6 +14,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 // ======================================================
 
 export const getAdminDashboard = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
   const [
     totalUsers,
 
@@ -457,6 +459,8 @@ export const updateUserRole = asyncHandler(async (req, res) => {
 // ======================================================
 
 export const getAllBookings = asyncHandler(async (req, res) => {
+  await cleanupExpiredBookings();
+
   const bookings = await Booking.find()
 
     .sort({

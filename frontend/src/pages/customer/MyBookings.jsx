@@ -13,6 +13,8 @@ import Button from "../../components/common/Button.jsx";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../constants/routes.js";
 
+import { isPastDate } from "../../utils/formatters.js";
+
 const MyBookings = () => {
   const dispatch = useDispatch();
   const { list, status } = useSelector((s) => s.bookings);
@@ -20,6 +22,10 @@ const MyBookings = () => {
   useEffect(() => {
     dispatch(fetchMyBookings());
   }, [dispatch]);
+
+  const activeBookings = list.filter(
+    (b) => !(b.bookingStatus === "pending" && isPastDate(b.pickupDate))
+  );
 
   const handleCancel = async (id) => {
     if (!window.confirm("Cancel this booking?")) return;
@@ -48,7 +54,7 @@ const MyBookings = () => {
 
       {status === "loading" && <Spinner fullPage />}
 
-      {status === "succeeded" && list.length === 0 && (
+      {status === "succeeded" && activeBookings.length === 0 && (
         <div className="mt-10">
           <EmptyState
             icon={CalendarCheck}
@@ -63,14 +69,14 @@ const MyBookings = () => {
         </div>
       )}
 
-      {status === "succeeded" && list.length > 0 && (
+      {status === "succeeded" && activeBookings.length > 0 && (
         <div className="mt-8 space-y-4">
-          {list.map((booking) => (
+          {activeBookings.map((booking) => (
             <BookingCard
               key={booking._id}
               booking={booking}
               actions={
-                ["pending", "approved", "confirmed"].includes(booking.bookingStatus) ? (
+                ["pending", "approved", "confirmed"].includes(booking.bookingStatus) && !isPastDate(booking.returnDate) ? (
                   <Button
                     variant="danger"
                     size="sm"
