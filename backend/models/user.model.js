@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema(
       default: 'customer',
     },
 
+    needsRoleSelection: {
+      type: Boolean,
+      default: false,
+    },
+
     authProvider: {
       type: String,
       enum: ['local', 'google'],
@@ -133,6 +138,7 @@ userSchema.methods.toSafeObject = function () {
     authProvider: this.authProvider,
     isActive: this.isActive,
     isVerified: this.isVerified,
+    needsRoleSelection: this.needsRoleSelection,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

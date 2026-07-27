@@ -229,6 +229,38 @@ export const googleCallback = asyncHandler(async (req, res) => {
 });
 
 // ======================================================
+// @desc    Select User Role (for Google signups first login)
+// @route   POST /api/auth/select-role
+// @access  Private
+// ======================================================
+export const selectRole = asyncHandler(async (req, res) => {
+  const { role } = req.body;
+
+  if (!["customer", "owner"].includes(role)) {
+    throw new ApiError(400, "Invalid role selection. Must be either customer or owner.");
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, "User not found.");
+  }
+
+  user.role = role;
+  user.needsRoleSelection = false;
+  await user.save();
+
+  sendTokenCookie(res, user._id, user.role);
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      user.toSafeObject(),
+      "Role selected and user updated successfully.",
+    ),
+  );
+});
+
+// ======================================================
 // @desc    Forgot Password
 // @route   POST /api/auth/forgot-password
 // @access  Public
