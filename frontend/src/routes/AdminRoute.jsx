@@ -7,7 +7,7 @@ import { ROUTES } from '../constants/routes.js';
 import { ROLES } from '../constants/index.js';
 
 const AdminRoute = () => {
-  const { isAuthenticated, bootstrapped, role } = useAuth();
+  const { isAuthenticated, bootstrapped, role, user } = useAuth();
 
   if (!bootstrapped) {
     return <Spinner fullPage />;
@@ -15,6 +15,10 @@ const AdminRoute = () => {
 
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />;
+  }
+
+  if (user?.needsRoleSelection) {
+    return <Navigate to={ROUTES.SELECT_ROLE} replace />;
   }
 
   if (role === ROLES.ADMIN) {

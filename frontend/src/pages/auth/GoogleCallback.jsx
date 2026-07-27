@@ -21,7 +21,9 @@ const GoogleCallback = () => {
           `Welcome${user?.name ? `, ${user.name}` : ''}!`
         );
 
-        if (user?.role === ROLES.ADMIN) {
+        if (user?.needsRoleSelection) {
+          navigate(ROUTES.SELECT_ROLE, { replace: true });
+        } else if (user?.role === ROLES.ADMIN) {
           navigate(ROUTES.ADMIN_DASHBOARD, { replace: true });
         } else if (user?.role === ROLES.OWNER) {
           navigate(ROUTES.OWNER_DASHBOARD, { replace: true });

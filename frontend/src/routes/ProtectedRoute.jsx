@@ -6,7 +6,7 @@ import Spinner from '../components/common/Spinner.jsx';
 import { ROUTES } from '../constants/routes.js';
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, bootstrapped } = useAuth();
+  const { isAuthenticated, bootstrapped, user } = useAuth();
   const location = useLocation();
 
   // Wait until authentication bootstrap completes.
@@ -23,6 +23,10 @@ const ProtectedRoute = () => {
         replace
       />
     );
+  }
+
+  if (user?.needsRoleSelection && location.pathname !== ROUTES.SELECT_ROLE) {
+    return <Navigate to={ROUTES.SELECT_ROLE} replace />;
   }
 
   return <Outlet />;

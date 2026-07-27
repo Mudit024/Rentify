@@ -34,6 +34,7 @@ const NotFound = lazy(() => import('./pages/public/NotFound.jsx'));
 const Login = lazy(() => import('./pages/auth/Login.jsx'));
 const Register = lazy(() => import('./pages/auth/Register.jsx'));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback.jsx'));
+const SelectRole = lazy(() => import('./pages/auth/SelectRole.jsx'));
 
 // Customer
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard.jsx'));
@@ -100,6 +101,7 @@ const App = () => {
           <Route element={<AuthLayout />}>
             <Route path={ROUTES.LOGIN} element={<Login />} />
             <Route path={ROUTES.REGISTER} element={<Register />} />
+            <Route path={ROUTES.SELECT_ROLE} element={<SelectRole />} />
           </Route>
 
           {/* Google OAuth */}

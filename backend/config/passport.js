@@ -55,6 +55,7 @@ passport.use(
           authProvider: 'google',
           role: requestedRole,
           isVerified: true,
+          needsRoleSelection: true,
           avatar: profile.photos?.[0]?.value
             ? { url: profile.photos[0].value, fileId: '' }
             : { url: '', fileId: '' },

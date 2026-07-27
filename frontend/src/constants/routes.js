@@ -14,6 +14,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   GOOGLE_SUCCESS: '/auth/google/success',
+  SELECT_ROLE: '/auth/select-role',
 
   // ==========================
   // Customer
